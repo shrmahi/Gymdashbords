@@ -112,6 +112,7 @@ File: Components
 .btn {
   border-radius: 2px;
   padding: 6px 14px;
+
 }
 
 .btn-md {
@@ -164,6 +165,7 @@ File: Components
 .btn-custom {
   background-color: #d80032;
   border-color: #d80032;
+  float: right;
 }
 
 .btn-custom:hover,
@@ -218,6 +220,7 @@ File: Components
 .btn-success {
   background-color: #d80032 !important;
   border: 1px solid #d80032 !important;
+  float: right;
 }
 
 .btn-reset {
@@ -3901,7 +3904,7 @@ table.dataTable thead th.sorting_desc:after {
 }
 
 .table-colored-bordered.table-bordered-primary {
-  border: 2px solid black;
+  border: 2px solid #e9ecef;
 }
 
 .table-colored-bordered.table-bordered-primary thead th {
@@ -4369,4 +4372,43 @@ table.dataTable thead th.sorting_desc:after {
 /* Google Chart*/
 .google-chart .chart {
   display: inline-block;
+}
+
+.custom-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.custom-pagination ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.custom-pagination ul li {
+  border-right: 1px solid #ddd;
+}
+
+.custom-pagination ul li:last-child {
+  border-right: none;
+}
+
+.custom-pagination ul li a,
+.custom-pagination ul li span {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #007bff;
+  background-color: white;
+  font-family: Arial, sans-serif;
+}
+
+.custom-pagination ul li span {
+  color: #6c757d;
+  cursor: default;
 }

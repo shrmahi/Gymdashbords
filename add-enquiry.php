@@ -16,12 +16,9 @@ if (strlen($_SESSION['login']) == 0) {
         $status = 1;
         $query = mysqli_query($con, "insert into tblenquiry(FirstName,LastName,Email,Number,EnquiryFor,EnquiryOn,Is_Active) values('$fname','$lname','$email','$number','$enquiryfor','$enquiryon','$status')");
         if ($query) {
-            echo "<script>
-        alert('Enquiry added successfully');
-        window.location.href = 'manage-enquiry.php';
-        </script>";
+            $msg = "Enquiry successfully added.";
         } else {
-            $error = "Something went wrong . Please try again.";
+            $error = "Something went wrong. Please try again.";
         }
     }
 
@@ -91,104 +88,96 @@ if (strlen($_SESSION['login']) == 0) {
                         </div>
                         <!-- end row -->
 
-
                         <div class="row">
-                            <div class="col-sm-12">
-                                <div class="card-box">
-                                    <h4 class="m-t-0 header-title"><b>Add Enquiry </b></h4>
-                                    <hr />
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <!---Success Message--->
-                                        <div class="alert-container">
-                                            <?php if ($msg) { ?>
-                                            <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Well done!</strong>
-                                                <?php echo htmlentities($msg); ?>
-                                            </div>
-                                            <?php } ?>
+                            <?php include('alert_message.php'); ?>
+                        </div>
+                    </div>
 
-                                            <?php if ($error) { ?>
-                                            <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Oh snap!</strong>
-                                                <?php echo htmlentities($error); ?>
+
+
+
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form class="form-horizontal" name="category" method="post">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Name</label>
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" value="" name="fname" required>
                                             </div>
-                                            <?php } ?>
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" value="" name="lname" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <form class="form-horizontal" name="category" method="post">
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Name</label>
-                                                <div class="col-md-4">
-                                                    <input type="text" class="form-control" value="" name="fname"
-                                                        required>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <input type="text" class="form-control" value="" name="lname"
-                                                        required>
-                                                </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Email Id</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" value="" name="email" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Email Id</label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" value="" name="email"
-                                                        required>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Contact Number</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" value="" name="number" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Contact Number</label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" value="" name="number"
-                                                        required>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Enquiry For</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" value="" name="enquiryfor" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Enquiry For</label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" value="" name="enquiryfor"
-                                                        required>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Enquiry On</label>
+                                            <div class="col-md-9">
+                                                <input type="date" class="form-control" value="" name="enquiryon" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Enquiry On</label>
-                                                <div class="col-md-9">
-                                                    <input type="date" class="form-control" value="" name="enquiryon"
-                                                        required>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Reference</label>
+                                            <div class="col-md-9">
+                                                <select class="form-control" id="referenceSelect">
+                                                    <option value="Walk In">Walk In</option>
+                                                    <option value="Social Media">Social Media</option>
+                                                    <option value="Advertisement">Advertisement</option>
+                                                    <option value="Banner">Banner</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
                                             </div>
+                                            <div id="otherReferenceDiv" style="display: none; margin-top: 10px;">
+                                                <input type="text" class="form-control" id="otherReferenceText"
+                                                    placeholder="Enter Reference">
+                                                <button type="button" class="btn btn-sm btn-success mt-2"
+                                                    id="saveReferenceBtn">Save</button>
+                                            </div>
+                                        </div>
 
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">&nbsp;</label>
-                                                <div class="col-md-10">
-                                                    <button type="submit"
-                                                        class="btn btn-custom waves-effect waves-light btn-md"
-                                                        name="submit">
-                                                        Submit
-                                                    </button>
-                                                </div>
+
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">&nbsp;</label>
+                                            <div class="form-group text-right">
+                                                <button type="submit" class="btn btn-custom waves-effect waves-light btn-md"
+                                                    name="submit">
+                                                    Submit
+                                                </button>
                                             </div>
-                                        </form>
-                                    </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- end row -->
-                    </div> <!-- container -->
-                </div> <!-- content -->
-                <?php include('includes/footer.php'); ?>
-            </div>
+                </div>
+                <!-- end row -->
+            </div> <!-- container -->
+        </div> <!-- content -->
+        <?php include('includes/footer.php'); ?>
+
+
+
+        </div>
         </div>
         <script>
             var resizefunc = [];
@@ -207,6 +196,71 @@ if (strlen($_SESSION['login']) == 0) {
         <!-- App js -->
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
+        <!-- <script>
+            $('#referenceSelect').on('change', function () {
+                let selected = $(this).val();
+                if (selected === 'User' || selected === 'Person') {
+                    $('#referenceModal').modal('show');
+                }
+            });
+
+            $('#referenceForm').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: 'add_reference.php',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        alert(response);
+                        $('#referenceModal').modal('hide');
+                        $('#referenceForm')[0].reset();
+                    },
+                    error: function () {
+                        alert('Error saving reference.');
+                    }
+                });
+            });
+        </script> -->
+        <script>
+            document.getElementById("referenceSelect").addEventListener("change", function () {
+                var selected = this.value;
+                var otherDiv = document.getElementById("otherReferenceDiv");
+                if (selected === "Other") {
+                    otherDiv.style.display = "block";
+                } else {
+                    otherDiv.style.display = "none";
+                }
+            });
+        </script>
+        <script>
+            document.getElementById("saveReferenceBtn").addEventListener("click", function () {
+                var reference = document.getElementById("otherReferenceText").value.trim();
+                if (reference === "") {
+                    alert("Please enter a reference name.");
+                    return;
+                }
+
+                // AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "insert_reference.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        if (xhr.responseText === "success") {
+                            alert("Reference saved!");
+                            document.getElementById("referenceSelect").innerHTML += `<option value="${reference}" selected>${reference}</option>`;
+                            document.getElementById("otherReferenceDiv").style.display = "none";
+                            document.getElementById("otherReferenceText").value = "";
+                        } else {
+                            alert("Error saving reference.");
+                        }
+                    }
+                };
+                xhr.send("reference=" + encodeURIComponent(reference));
+            });
+        </script>
+
+
 
     </body>
 

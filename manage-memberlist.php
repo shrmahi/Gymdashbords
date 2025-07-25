@@ -112,10 +112,10 @@ if (strlen($_SESSION['login']) == 0) {
                                     <label>Filter by Month: </label>
                                     <input type="month" name="month" class="form-control"
                                         value="<?php echo htmlentities($_GET['month']); ?>">
-                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                    <a href="manage-memberlist.php" class="btn btn-default">Reset</a>
+                                    <button type="submit" class="btn btn-filter">Filter</button>
+                                    <a href="manage-memberlist.php" class="btn btn-reset" style="color:white">Reset</a>
                                     <a href="download-member-pdf.php<?php echo (!empty($_GET['month'])) ? '?month=' . urlencode($_GET['month']) : ''; ?>"
-                                        class="btn btn-danger">Download PDF</a>
+                                        class="btn btn-custom btn-custom"> <i class="mdi mdi-printer"></i>PDF</a>
                                 </form>
                             </div>
                         </div>
@@ -125,12 +125,13 @@ if (strlen($_SESSION['login']) == 0) {
                                 <div class="demo-box m-t-20">
                                     <div class="m-b-30">
                                         <a href="add-member.php">
-                                            <button class="btn btn-success">Add <i
-                                                    class="mdi mdi-plus-circle-outline"></i></button>
+                                            <button class="btn btn-success"> <i
+                                                    class="mdi mdi-plus-circle-outline"></i>Add</button>
                                         </a>
                                     </div>
+                                    <br />
                                     <div class="table-responsive">
-                                        <table class="table table-colored-bordered table-bordered-primary">
+                                        <table class="table table-colored-bordered table-bordered-primary table-bordered">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
@@ -139,13 +140,14 @@ if (strlen($_SESSION['login']) == 0) {
                                                     <th>Mobile</th>
                                                     <th>Payment Mode</th>
                                                     <th>Join Date</th>
+                                                    <th>Package Expire</th>
                                                     <th>Status</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Mobile, AlterNumber, PaymentMode, JoinDate, Is_Active FROM tblmember $whereClause");
+                                                $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Mobile, AlterNumber, PaymentMode, JoinDate,ExpiryDate, Is_Active FROM tblmember $whereClause");
                                                 $cnt = 1;
                                                 while ($row = mysqli_fetch_array($query)) {
                                                     ?>
@@ -158,6 +160,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                         </td>
                                                         <td><?php echo htmlentities($row['PaymentMode']); ?></td>
                                                         <td><?php echo htmlentities($row['JoinDate']); ?></td>
+                                                        <td><?php echo htmlentities($row['ExpiryDate']); ?></td>
                                                         <td>
                                                             <?php if ($row['Is_Active'] == 1): ?>
                                                                 <span class="label label-success">Active</span>
@@ -169,23 +172,23 @@ if (strlen($_SESSION['login']) == 0) {
                                                             <a href="edit-member.php?cid=<?php echo htmlentities($row['id']); ?>"
                                                                 title="Edit">
                                                                 <i class="fa fa-pencil" style="color:#29b6f6;"></i>
-                                                            </a>
+                                                            </a>&nbsp;
                                                             <a href="member.php?cid=<?php echo htmlentities($row['id']); ?>"
                                                                 title="View">
                                                                 <i class="fa fa-eye" style="color:#29b6f6;"></i>
-                                                            </a>
+                                                            </a>&nbsp;
                                                             <?php if ($row['Is_Active'] == 1): ?>
                                                                 <a href="manage-memberlist.php?disid=<?php echo htmlentities($row['id']); ?>"
                                                                     onclick="return confirm('Deactivate this member?');"
                                                                     title="Deactivate">
                                                                     <i class="fa fa-toggle-off" style="color:red;"></i>
-                                                                </a>
+                                                                </a>&nbsp;
                                                             <?php else: ?>
                                                                 <a href="manage-memberlist.php?appid=<?php echo htmlentities($row['id']); ?>"
                                                                     onclick="return confirm('Activate this member?');"
                                                                     title="Activate">
                                                                     <i class="fa fa-toggle-on" style="color:green;"></i>
-                                                                </a>
+                                                                </a>&nbsp;
                                                                 <a href="manage-memberlist.php?rid=<?php echo htmlentities($row['id']); ?>&action=parmdel"
                                                                     onclick="return confirm('Delete permanently?');"
                                                                     title="Delete Forever">
@@ -196,8 +199,70 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </tr>
                                                     <?php $cnt++;
                                                 } ?>
+
                                             </tbody>
+
+
+
                                         </table>
+                                        <!-- <div style="text-align: right; margin-top: 5px;">
+                                            <h6 style="margin: 0;">Powered by CoreStorm</h6>
+                                        </div> -->
+
+                                        <h6 style="float: right;">Powered by CoreStorm</h6>
+                                        <!-- Add a wrapper div with a class for centering -->
+                                        <div class="custom-pagination"
+                                            style="display: flex; justify-content: center; margin-top: 20px;">
+                                            <ul>
+                                                <!-- First Page Link -->
+                                                <?php if ($page > 1): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>">First</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>First</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Prev Link -->
+                                                <?php if ($page > 1): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">Prev</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Prev</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Numbered Page Links -->
+                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                                    <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                                        <?php if ($i == $page): ?>
+                                                            <span style="font-weight: bold;"><?php echo $i; ?></span>
+                                                        <?php else: ?>
+                                                            <a
+                                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
+                                                        <?php endif; ?>
+                                                    </li>
+                                                <?php endfor; ?>
+
+                                                <!-- Next Link -->
+                                                <?php if ($page < $totalPages): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>">Next</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Next</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Last Page Link -->
+                                                <?php if ($page < $totalPages): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $totalPages])); ?>">Last</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Last</span></li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

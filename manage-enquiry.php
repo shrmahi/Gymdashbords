@@ -26,16 +26,56 @@ if (strlen($_SESSION['login']) == 0) {
 
     // Month filter logic
     $selectedMonth = isset($_GET['month']) ? $_GET['month'] : '';
+    $sortOrder = "DESC"; // Default sort
+    if (isset($_GET['sort']) && in_array(strtolower($_GET['sort']), ['asc', 'desc'])) {
+        $sortOrder = strtoupper($_GET['sort']);
+    }
+
+    // if ($selectedMonth) {
+    //     $start_date = $selectedMonth . "-01";
+    //     $end_date = date("Y-m-t", strtotime($start_date));
+    //     $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Number, EnquiryFor, EnquiryOn 
+    //                              FROM tblenquiry 
+    //                              WHERE Is_Active=1 
+    //                              AND EnquiryOn BETWEEN '$start_date' AND '$end_date'
+    //                              ORDER BY EnquiryOn $sortOrder");
+    // } else {
+    //     $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Number, EnquiryFor, EnquiryOn 
+    //                              FROM tblenquiry 
+    //                              WHERE Is_Active=1 
+    //                              ORDER BY EnquiryOn $sortOrder");
+    // }
+    // Pagination Logic
+    $limit = 10;
+    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * $limit;
+
+    $whereClause = "WHERE Is_Active = 1";
+
     if ($selectedMonth) {
         $start_date = $selectedMonth . "-01";
         $end_date = date("Y-m-t", strtotime($start_date));
-        $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Number, EnquiryFor, EnquiryOn 
-                                     FROM tblenquiry 
-                                     WHERE Is_Active=1 AND EnquiryOn BETWEEN '$start_date' AND '$end_date'");
-    } else {
-        $query = mysqli_query($con, "SELECT id, FirstName, LastName, Email, Number, EnquiryFor, EnquiryOn 
-                                     FROM tblenquiry WHERE Is_Active=1");
+        $whereClause .= " AND EnquiryOn BETWEEN '$start_date' AND '$end_date'";
+    } elseif ($selectedYear) {
+        $whereClause .= " AND YEAR(EnquiryOn) = '$selectedYear'";
     }
+
+    // Count total
+    $countQuery = "SELECT COUNT(*) AS total FROM tblenquiry $whereClause";
+    $totalResult = mysqli_query($con, $countQuery);
+    $totalRow = mysqli_fetch_assoc($totalResult);
+    $totalPages = ceil($totalRow['total'] / $limit);
+
+    // Main query
+    $sql = "SELECT id, FirstName, LastName, Email, Number, EnquiryFor, EnquiryOn 
+        FROM tblenquiry 
+        $whereClause 
+        ORDER BY EnquiryOn $sortOrder 
+        LIMIT $limit OFFSET $offset";
+
+    $query = mysqli_query($con, $sql);
+
+
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -76,41 +116,36 @@ if (strlen($_SESSION['login']) == 0) {
                         </div>
 
                         <!-- Filter Form -->
-                        <form method="get" class="form-inline mb-4">
-                            <label for="month" class="mr-2">Filter by Month:</label>
-                            <input type="month" name="month" id="month" class="form-control mr-2"
-                                value="<?php echo htmlentities($selectedMonth); ?>" required>
-                            <button type="submit" class="btn btn-filter">Filter</button>
-                            <a href="manage-enquiry.php" class="btn btn-reset ml-2" style="color: white;">Reset</a>
-                        </form>
+                        <div class="col-md-12">
+                            <form method="get" class="form-inline mb-4">
+                                <label for="month" class="mr-2">Filter by Month:</label>
+                                <input type="month" name="month" id="month" class="form-control mr-2"
+                                    value="<?php //echo htmlentities($selectedMonth); ?>" required>
+                                <label for="year" class="mr-2 ml-3">Filter by Year:</label>
+                                <select name="year" id="year" class="form-control mr-2">
+                                    <option value="">--Select Year--</option>
+                                    <?php
+                                    $currentYear = date('Y');
+                                    for ($i = $currentYear; $i >= 2020; $i--) {
+                                        $selected = ($i == htmlentities($selectedYear)) ? 'selected' : '';
+                                        echo "<option value=\"$i\" $selected>$i</option>";
+                                    }
+                                    ?>
+                                </select>
+                                <button type="submit" class="btn btn-filter">Filter</button>
+                                <a href="manage-enquiry.php" class="btn btn-reset ml-2" style="color: white;">Reset</a>
+                                <button id="printPDF" class="btn btn-custom waves-effect waves-light">
+                                    <i class="mdi mdi-printer"></i>PDF
+                                </button>
+
+                            </form>
+                        </div>
+
+
 
                         <!-- Alert Messages -->
                         <div class="row">
-                            <div class="col-sm-6">
-                            <div class="alert-container">
-                                            <?php if ($msg) { ?>
-                                            <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Well done!</strong>
-                                                <?php echo htmlentities($msg); ?>
-                                            </div>
-                                            <?php } ?>
-
-                                            <?php if ($error) { ?>
-                                            <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Oh snap!</strong>
-                                                <?php echo htmlentities($error); ?>
-                                            </div>
-                                            <?php } ?>
-                                        </div>
-                            </div>
+                            <?php include('alert_message.php'); ?>
                         </div>
 
                         <!-- Enquiry Table -->
@@ -120,24 +155,31 @@ if (strlen($_SESSION['login']) == 0) {
                                     <div class="m-b-30 d-flex gap-2">
                                         <a href="add-enquiry.php">
                                             <button id="addToTable" class="btn btn-success waves-effect waves-light">
-                                                Add <i class="mdi mdi-plus-circle-outline"></i>
+                                                <i class="mdi mdi-plus-circle-outline"></i>
                                             </button>
                                         </a>
-                                        <button id="printPDF" class="btn btn-info waves-effect waves-light">
+                                        <!-- <button id="printPDF" class="btn btn-custom waves-effect waves-light">
                                             Print PDF <i class="mdi mdi-printer"></i>
-                                        </button>
+                                        </button> -->
                                     </div>
+                                    <br />
 
                                     <div class="table-responsive" id="enquiryTablePDF">
-                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                        <table
+                                            class="table m-0 table-colored-bordered table-bordered-primary table-bordered">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Name</th>
                                                     <th>Email</th>
                                                     <th>Number</th>
-                                                    <th>EnquiryFor</th>
-                                                    <th>EnquiryOn</th>
+                                                    <th>Enquiry For</th>
+                                                    <th>Reference</th>
+                                                    <th>Enquiry On <a href="?sort=asc"><i class="fa fa-arrow-up"
+                                                                style="color:white"></i></a>
+                                                        <a href="?sort=desc"><i class="fa fa-arrow-down"
+                                                                style="color:white"></i></a>
+                                                    </th>
                                                     <th class="no-pdf">Action</th>
                                                 </tr>
                                             </thead>
@@ -153,6 +195,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                         <td><?php echo htmlentities($row['Email']); ?></td>
                                                         <td><?php echo htmlentities($row['Number']); ?></td>
                                                         <td><?php echo htmlentities($row['EnquiryFor']); ?></td>
+                                                        <td><?php echo htmlentities($row['EnquiryFor']); ?></td>
                                                         <td><?php echo htmlentities($row['EnquiryOn']); ?></td>
                                                         <td class="no-pdf">
                                                             <a
@@ -163,13 +206,74 @@ if (strlen($_SESSION['login']) == 0) {
                                                             <a
                                                                 href="manage-enquiry.php?rid=<?php echo htmlentities($row['id']); ?>&&action=del">
                                                                 <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                            </a>
-                                                        </td>
+                                                            </a>&nbsp;
+                                                            <a href="add-member.php"><i class="fa fa-plus"
+                                                                    style="color:green"></i></a>
+                                                        </td> 
                                                     </tr>
                                                     <?php $cnt++;
                                                 } ?>
                                             </tbody>
                                         </table>
+                                        <h6 style="float: right;">Powered by CoreStorm</h6>
+
+                                        <!-- Add a wrapper div with a class for centering -->
+                                        <div class="custom-pagination"
+                                            style="display: flex; justify-content: center; margin-top: 20px;">
+                                            <ul>
+                                                <!-- First Page Link -->
+                                                <?php if ($page > 1): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>">First</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>First</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Prev Link -->
+                                                <?php if ($page > 1): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">Prev</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Prev</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Numbered Page Links -->
+                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                                    <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                                        <?php if ($i == $page): ?>
+                                                            <span style="font-weight: bold;"><?php echo $i; ?></span>
+                                                        <?php else: ?>
+                                                            <a
+                                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
+                                                        <?php endif; ?>
+                                                    </li>
+                                                <?php endfor; ?>
+
+                                                <!-- Next Link -->
+                                                <?php if ($page < $totalPages): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>">Next</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Next</span></li>
+                                                <?php endif; ?>
+
+                                                <!-- Last Page Link -->
+                                                <?php if ($page < $totalPages): ?>
+                                                    <li><a
+                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $totalPages])); ?>">Last</a>
+                                                    </li>
+                                                <?php else: ?>
+                                                    <li><span>Last</span></li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -202,7 +306,9 @@ if (strlen($_SESSION['login']) == 0) {
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
         <script>
-            document.getElementById('printPDF').addEventListener('click', function () {
+            document.getElementById('printPDF').addEventListener('click', function (e) {
+                e.preventDefault();
+
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('p', 'pt', 'a4');
                 const source = document.getElementById("enquiryTablePDF");
@@ -211,6 +317,19 @@ if (strlen($_SESSION['login']) == 0) {
                 const elements = document.querySelectorAll('.no-pdf');
                 elements.forEach(el => el.style.display = 'none');
 
+                // Get selected values
+                const monthInput = document.getElementById("month")?.value;
+                const yearInput = document.getElementById("year")?.value;
+                let filename = "Enquiry_List.pdf";
+
+                if (monthInput) {
+                    const date = new Date(monthInput + "-01");
+                    const monthName = date.toLocaleString('default', { month: 'long' });
+                    filename = `${monthName}_${date.getFullYear()}_enquiry.pdf`;
+                } else if (yearInput) {
+                    filename = `${yearInput}_enquiry.pdf`;
+                }
+
                 html2canvas(source, { scale: 2 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png');
                     const imgProps = doc.getImageProperties(imgData);
@@ -218,13 +337,15 @@ if (strlen($_SESSION['login']) == 0) {
                     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
                     doc.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight);
-                    doc.save("Enquiry_List.pdf");
+                    doc.save(filename);
 
                     // Restore action column
                     elements.forEach(el => el.style.display = '');
                 });
             });
         </script>
+
+
 
 
     </body>

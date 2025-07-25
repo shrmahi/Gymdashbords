@@ -117,6 +117,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                     class="mdi mdi-plus-circle-outline"></i></button>
                                         </a>
                                     </div>
+                                    <br />
                                     <div class="table-responsive">
                                         <table class="table table-colored-bordered table-bordered-primary">
                                             <thead>

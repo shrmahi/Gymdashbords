@@ -141,7 +141,7 @@ if (strlen($_SESSION['login']) == 0) {
 
                                 <?php
                                 $catid = intval($_GET['cid']);
-                                $query = mysqli_query($con, "Select tblmember.id as catid, `MemberBid`, `FirstName`, `LastName`, `Gender`, `Email`, `Mobile`, `AlterNumber`, `DoctorName`, `DoctorNumber`, `MedicalHistory`, `Address`, `PermnentAddress`, `DrivingNumber`, `PanNumber`, `AadharNumber`, `Dob`, `JoinDate`, `MaritalStatus`, `AssignStaff`, `ShiftType`, `PakageType`, `PaymentMode`, `ReceiptType`, `ReceiptDate`, `PostImage` from  tblmember where id='$catid'");
+                                $query = mysqli_query($con, "Select tblmember.id as catid, `MemberBid`, `FirstName`, `LastName`, `Gender`, `Email`, `Mobile`, `AlterNumber`, `DoctorName`, `DoctorNumber`, `MedicalHistory`, `Address`, `PermnentAddress`, `AadharNumber`, `DrivingNumber`, `PanNumber`, `Dob`, `JoinDate`, `MaritalStatus`, `AssignStaff`, `ShiftType`, `PakageType`, `PaymentMode`, `ReceiptType`, `ReceiptDate`, `PostImage` from  tblmember where id='$catid'");
                                 $cnt = 1;
                                 while ($row = mysqli_fetch_array($query)) {
                                     ?>
@@ -151,7 +151,7 @@ if (strlen($_SESSION['login']) == 0) {
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Member's ID</label>
                                                 <div class="col-md-5">
-                                                    <input type="text" class="form-control" name="fname"
+                                                    <input type="text" class="form-control" name="memberid"
                                                         value="<?php echo htmlentities($row['MemberBid']); ?>" required>
                                                 </div>
                                                 <div class="col-md-5">
@@ -174,10 +174,11 @@ if (strlen($_SESSION['login']) == 0) {
                                                         value="<?php echo htmlentities($row['LastName']); ?>" required>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Gender</label>
                                                 <div class="col-md-5">
-    <?php $gender = htmlentities($row['Gender']); ?>
+                                                    <?php $gender = htmlentities($row['Gender']); ?>
                                                     <label class="radio-inline">
                                                         <input type="radio" name="gender" value="Male" <?php if ($gender == 'Male')
                                                             echo 'checked'; ?> required> Male
@@ -191,17 +192,19 @@ if (strlen($_SESSION['login']) == 0) {
                                                             echo 'checked'; ?>> Other
                                                     </label>
                                                 </div>
-
                                                 <div class="col-md-5">
                                                     <select class="form-control" name="maritalstatus" required>
-                                                        < value="<?php echo htmlentities($row['MaritalStatus']); ?>">
+                                                        <option
+                                                            value="<?php echo htmlentities($row['MaritalStatus']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['MaritalStatus']); ?>
-                                                            </option>
-                                                            <option value="Married">Married</option>
-                                                            <option value="Unmarried">Unmarried</option>
+                                                        </option>
+                                                        <option value="Married">Married</option>
+                                                        <option value="Unmarried">Unmarried</option>
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Email</label>
                                                 <div class="col-md-10">
@@ -227,8 +230,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <label class="col-md-2 control-label">Address</label>
                                                 <div class="col-md-5">
                                                     <input type="text" class="form-control" name="address"
-                                                        value="<?php echo htmlentities(string: $row['Address']); ?>"
-                                                        required>
+                                                        value="<?php echo htmlentities($row['Address']); ?>" required>
                                                 </div>
                                                 <div class="col-md-5">
                                                     <input type="text" class="form-control" name="altaddress"
@@ -236,6 +238,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                         required>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Doctor's Details</label>
                                                 <div class="col-md-3">
@@ -251,7 +254,8 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <div class="col-md-4">
                                                     <select class="form-control" name="medihistory" required>
                                                         <option
-                                                            value="<?php echo htmlentities($row['MedicalHistory']); ?>">
+                                                            value="<?php echo htmlentities($row['MedicalHistory']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['MedicalHistory']); ?>
                                                         </option>
                                                         <option value="No">No</option>
@@ -260,18 +264,19 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Staff and Shift</label>
                                                 <div class="col-md-5">
                                                     <select class="form-control" name="assignstaff" required>
-                                                        <option
-                                                            value="<?php echo htmlentities($row['AssignStaff']); ?>">
+                                                        <option value="<?php echo htmlentities($row['AssignStaff']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['AssignStaff']); ?>
                                                         </option>
                                                         <?php
-                                                        $query = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Type='Trainer' AND Is_Active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['FirstName']) . '">' . htmlentities($row['FirstName']) . '</option>';
+                                                        $staffQuery = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Type='Trainer' AND Is_Active=1");
+                                                        while ($staffRow = mysqli_fetch_array($staffQuery)) {
+                                                            echo '<option value="' . htmlentities($staffRow['FirstName']) . '">' . htmlentities($staffRow['FirstName']) . '</option>';
                                                         }
                                                         ?>
                                                     </select>
@@ -280,9 +285,8 @@ if (strlen($_SESSION['login']) == 0) {
                                                     <select class="form-control" name="shifttype" required>
                                                         <?php
                                                         $currentShift = htmlentities($row['ShiftType']);
-
-                                                        $query = mysqli_query($con, "SELECT ShiftName FROM tblshift WHERE Is_Active=1");
-                                                        while ($shiftRow = mysqli_fetch_array($query)) {
+                                                        $shiftQuery = mysqli_query($con, "SELECT ShiftName FROM tblshift WHERE Is_Active=1");
+                                                        while ($shiftRow = mysqli_fetch_array($shiftQuery)) {
                                                             $shiftName = htmlentities($shiftRow['ShiftName']);
                                                             $selected = ($shiftName === $currentShift) ? 'selected' : '';
                                                             echo '<option value="' . $shiftName . '" ' . $selected . '>' . $shiftName . '</option>';
@@ -291,51 +295,57 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group row">
-    <label class="col-md-2 col-form-label">Documents</label>
-    <div class="col-md-10">
-        <div class="row">
-            <div class="col-md-4 mb-2">
-                <input type="text" class="form-control" name="aadhar"
-                    value="<?php echo htmlentities($row['AadharNumber']); ?>" required>
+                                                <label class="col-md-2 col-form-label">Documents</label>
+                                                <div class="col-md-10">
+                                                    <div class="row">
+                                                        <div class="col-md-4 mb-2">
+                                                            <input type="text" class="form-control" name="aadhar"
+                                                                value="<?php echo htmlentities($row['AadharNumber']); ?>"
+                                                                required>
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <input type="text" class="form-control" name="drivingnum"
-                                                                value="<?php echo htmlentities($row['DrivingNumber']); ?>" required>
+                                                                value="<?php echo htmlentities($row['DrivingNumber']); ?>"
+                                                                required>
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <input type="text" class="form-control" name="pannum"
-                                                                value="<?php echo htmlentities($row['PanNumber']); ?>" required>
+                                                                value="<?php echo htmlentities($row['PanNumber']); ?>"
+                                                                required>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
-    <label class="col-md-2 control-label">Date of Birth</label>
-    <div class="col-md-4">
-        <input type="date" class="form-control" name="dob" 
-            value="<?php echo htmlentities($row['Dob']); ?>" required>
+                                                <label class="col-md-2 control-label">Date of Birth</label>
+                                                <div class="col-md-4">
+                                                    <input type="date" class="form-control" name="dob"
+                                                        value="<?php echo htmlentities($row['Dob']); ?>" required>
                                                 </div>
                                                 <label class="col-md-2 control-label">Joining Date</label>
                                                 <div class="col-md-4">
-                                                    <input type="date" class="form-control" name="joindate" value="<?php echo htmlentities($row['JoinDate']); ?>"
-                                                        required>
+                                                    <input type="date" class="form-control" name="joindate"
+                                                        value="<?php echo htmlentities($row['JoinDate']); ?>" required>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Package & Payment</label>
                                                 <div class="col-md-4">
                                                     <select class="form-control" name="pkgtype" required>
-                                                        <option value="<?php echo htmlentities($row['PakageType']); ?>">
+                                                        <option value="<?php echo htmlentities($row['PakageType']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['PakageType']); ?>
                                                         </option>
                                                         <?php
-                                                            $query = mysqli_query($con, "SELECT PackageName FROM tblpackage WHERE Is_Active=1");
-                                                            while ($row = mysqli_fetch_array($query)) {
-                                                                echo '<option value="' . htmlentities($row['PackageName']) . '">' . htmlentities($row['PackageName']) . '</option>';
-                                                            }
-                                                            ?>
+                                                        $pkgQuery = mysqli_query($con, "SELECT PlanName FROM tblplan WHERE Is_Active=1");
+                                                        while ($pkgRow = mysqli_fetch_array($pkgQuery)) {
+                                                            echo '<option value="' . htmlentities($pkgRow['PlanName']) . '">' . htmlentities($pkgRow['PlanName']) . '</option>';
+                                                        }
+                                                        ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-2">
@@ -343,8 +353,8 @@ if (strlen($_SESSION['login']) == 0) {
                                                 </div>
                                                 <div class="col-md-4">
                                                     <select class="form-control" name="paymode" required>
-                                                        <option
-                                                            value="<?php echo htmlentities($row['PaymentMode']); ?>">
+                                                        <option value="<?php echo htmlentities($row['PaymentMode']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['PaymentMode']); ?>
                                                         </option>
                                                         <option value="Cash">Cash</option>
@@ -352,6 +362,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">Receipt</label>
                                                 <div class="col-md-4">
@@ -364,24 +375,23 @@ if (strlen($_SESSION['login']) == 0) {
                                                 </div>
                                                 <div class="col-md-4">
                                                     <select class="form-control" name="receipttype" required>
-                                                        <option
-                                                            value="<?php echo htmlentities($row['ReceiptType']); ?>">
+                                                        <option value="<?php echo htmlentities($row['ReceiptType']); ?>"
+                                                            selected>
                                                             <?php echo htmlentities($row['ReceiptType']); ?>
                                                         </option>
                                                         <?php
-                                                        $query = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_Active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['ReceiptNumber']) . '">' . htmlentities($row['ReceiptNumber']) . '</option>';
+                                                        $receiptQuery = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_Active=1");
+                                                        while ($receiptRow = mysqli_fetch_array($receiptQuery)) {
+                                                            echo '<option value="' . htmlentities($receiptRow['ReceiptNumber']) . '">' . htmlentities($receiptRow['ReceiptNumber']) . '</option>';
                                                         }
                                                         ?>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <?php } ?>
+
                                             <div class="form-group">
                                                 <label class="col-md-2 control-label">&nbsp;</label>
                                                 <div class="col-md-10">
-
                                                     <button type="submit"
                                                         class="btn btn-custom waves-effect waves-light btn-md"
                                                         name="submit">
@@ -389,12 +399,14 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </button>
                                                 </div>
                                             </div>
-
                                         </form>
+
+
                                     </div>
 
 
                                 </div>
+                                <?php } ?>
 
 
 

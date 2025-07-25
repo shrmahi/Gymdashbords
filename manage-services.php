@@ -122,12 +122,13 @@ if($_GET['action']=='parmdel' && $_GET['rid'])
 											<div class="demo-box m-t-20">
 <div class="m-b-30">
 <a href="add-services.php">
-<button id="addToTable" class="btn btn-success waves-effect waves-light">Add <i class="mdi mdi-plus-circle-outline" ></i></button>
+<button id="addToTable" class="btn btn-success waves-effect waves-light"> <i class="mdi mdi-plus-circle-outline" ></i>Add</button>
 </a>
  </div>
+ <br/>
 
 												<div class="table-responsive">
-                                                    <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                                    <table class="table m-0 table-colored-bordered table-bordered-primary table-bordered">
                                                         <thead>
                                                             <tr>
                                                                 <th>#</th>
@@ -146,8 +147,8 @@ while($row=mysqli_fetch_array($query))
  <tr>
 <th scope="row"><?php echo htmlentities($cnt);?></th>
 <td><?php echo htmlentities($row['ServiceName']);?></td>
-<td><a href="edit-services.php?cid=<?php echo htmlentities($row['id']);?>"><i class="fa fa-pencil" style="color: #29b6f6;"></i></a> 
-	&nbsp;<a href="manage-services.php?rid=<?php echo htmlentities($row['id']);?>&&action=del"> <i class="fa fa-trash-o" style="color: #f05050"></i></a> </td>
+<td><a href="edit-services.php?cid=<?php echo htmlentities($row['id']);?>"><i class="fa fa-pencil fa-2x" style="color: #29b6f6;"></i></a> 
+	&nbsp;<a href="manage-services.php?rid=<?php echo htmlentities($row['id']);?>&&action=del"> <i class="fa fa-trash-o fa-2x" style="color: #f05050"></i></a> </td>
 </tr>
 <?php
 $cnt++;
@@ -155,6 +156,7 @@ $cnt++;
 </tbody>
                                                   
                                                     </table>
+                                                    <h6 style="float: right;">Powered by CoreStorm</h6>
                                                 </div>
 
 

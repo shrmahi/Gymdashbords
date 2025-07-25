@@ -117,12 +117,13 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <div class="demo-box m-t-20">
     <div class="m-b-30">
     <a href="add-paymode.php">
-    <button id="addToTable" class="btn btn-success waves-effect waves-light">Add <i class="mdi mdi-plus-circle-outline" ></i></button>
+    <button id="addToTable" class="btn btn-success waves-effect waves-light"> <i class="mdi mdi-plus-circle-outline" ></i>Add</button>
     </a>
      </div>
+     <br/>
 
                                                     <div class="table-responsive">
-                                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                                        <table class="table m-0 table-colored-bordered table-bordered-primary table-bordered">
                                                             <thead>
                                                                 <tr>
                                                                     <th>#</th>
@@ -149,6 +150,7 @@ if (strlen($_SESSION['login']) == 0) {
     </tbody>
                                                   
                                                         </table>
+                                                        <h6 style="float: right;">Powered by CoreStorm</h6>
                                                     </div>
 
 

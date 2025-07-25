@@ -166,16 +166,6 @@ if (strlen($_SESSION['login']) == 0) {
 
                                 </div>
 
-
-
-
-
-
-
-
-
-
-
                             </div>
                         </div>
                     </div>

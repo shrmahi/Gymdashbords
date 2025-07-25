@@ -29,6 +29,7 @@ if (strlen($_SESSION['login']) == 0) {
         $pkgtype = $_POST['pkgtype'];
         $dob = $_POST['dob'];
         $joindate = $_POST['joindate'];
+        $expirydate = $_POST['expirydate'];
         $maritalstatus = $_POST['maritalstatus'];
         $receipttype = $_POST['receipttype'];
         $receiptdate = $_POST['receiptdate'];
@@ -49,13 +50,13 @@ if (strlen($_SESSION['login']) == 0) {
             $query = mysqli_query($con, "INSERT INTO tblmember (
                 MemberBid, FirstName, LastName, Gender, Email, Mobile, AlterNumber,
                 DoctorName, DoctorNumber, MedicalHistory, Address, PermnentAddress,
-                DrivingNumber, PanNumber, AadharNumber, Dob, JoinDate, MaritalStatus,
+                DrivingNumber, PanNumber, AadharNumber, Dob, JoinDate,expirydate, MaritalStatus,
                 AssignStaff, ShiftType, PakageType, PaymentMode, ReceiptType, ReceiptDate,
                 Is_Active, PostImage, postedBy
             ) VALUES (
                 '$memberid', '$fname', '$lname', '$gender', '$email', '$number', '$altnumber',
                 '$dname', '$dnumber', '$medihistory', '$address', '$altaddress',
-                '$drivingnum', '$pannum', '$aadhar', '$dob', '$joindate', '$maritalstatus',
+                '$drivingnum', '$pannum', '$aadhar', '$dob', '$joindate','$expirydate', '$maritalstatus',
                 '$assignstaff', '$shifttype', '$pkgtype', '$paymode', '$receipttype', '$receiptdate',
                 '$status', '$imgnewfile', '$postedby'
             )");
@@ -120,29 +121,7 @@ if (strlen($_SESSION['login']) == 0) {
 
                         <!-- Feedback messages -->
                         <div class="row">
-                            <div class="col-sm-6">
-                                <div class="alert-container">
-                                    <?php if ($msg) { ?>
-                                        <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Well done!</strong>
-                                            <?php echo htmlentities($msg); ?>
-                                        </div>
-                                    <?php } ?>
-
-                                    <?php if ($error) { ?>
-                                        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Oh snap!</strong>
-                                            <?php echo htmlentities($error); ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                            </div>
+                            <?php include('alert_message.php'); ?>
                         </div>
 
                         <!-- Form -->
@@ -161,11 +140,16 @@ if (strlen($_SESSION['login']) == 0) {
                                                 value="<?= $_SESSION['memberid'] ?>" required readonly>
 
                                         </div>
-                                        <div class="col-md-5">
-                                            <input type="file" class="form-control" name="postimage" required>
+                                        <div class="col-md-2">
+                                            <input type="file" class="form-control" name="postimage" id="postimage"
+                                                accept="image/*" required onchange="previewImage(event)">
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <img id="imagePreview" src="#" alt="Selected Image"
+                                                style="display: none; height: 100px; width: 100px; border: 1px solid #ccc; padding: 5px;">
                                         </div>
                                     </div>
-
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">Name</label>
                                         <div class="col-md-5">
@@ -299,29 +283,17 @@ if (strlen($_SESSION['login']) == 0) {
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">Date of Birth</label>
                                         <div class="col-md-4">
-                                            <input type="date" class="form-control" name="dob" required>
+                                            <input type="date" class="form-control" name="dob" id="dob" required
+                                                onchange="calculateAge()">
+
+                                            <span id="ageDisplay" style="font-weight: bold;"></span>
                                         </div>
-                                        <div class="col-md-2">
+                                        <!-- <div class="col-md-2">
                                             <label class="control-label">Joining Date</label>
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="date" class="form-control" name="joindate" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label">Package & Payment</label>
-                                        <div class="col-md-4">
-                                            <select class="form-control" name="pkgtype" required>
-                                                <option value="">-- Package Type --</option>
-                                                <?php
-                                                $query = mysqli_query($con, "SELECT PackageName FROM tblpackage WHERE Is_active=1");
-                                                while ($row = mysqli_fetch_array($query)) {
-                                                    echo '<option value="' . htmlentities($row['PackageName']) . '">' . htmlentities($row['PackageName']) . '</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
+                                            <input type="date" class="form-control" name="joindate" id="joindate" required>
+                                        </div> -->
                                         <div class="col-md-2">
                                             <label class="control-label">Payment Mode</label>
                                         </div>
@@ -335,6 +307,30 @@ if (strlen($_SESSION['login']) == 0) {
                                                 }
                                                 ?>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">Package</label>
+                                        <div class="col-md-4">
+                                            <select class="form-control" name="pkgtype" id="pkgtype" required>
+                                                <option value="">-- Package Type --</option>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT * FROM tblplan WHERE Is_active=1");
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    $durationText = htmlentities($row['Duration']) . ' ' . htmlentities($row['Days']); // e.g. "1 Month 10 Day"
+                                                    echo '<option value="' . htmlentities($row['PlanName']) . '" 
+              data-duration="' . $durationText . '">'
+                                                        . htmlentities($row['PlanName']) . ' - ' . $durationText . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="control-label">Joining Date</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="date" class="form-control" name="joindate" id="joindate" required>
                                         </div>
                                     </div>
 
@@ -360,7 +356,13 @@ if (strlen($_SESSION['login']) == 0) {
                                     </div>
 
                                     <div class="form-group">
-                                        <div class="col-md-offset-2 col-md-10">
+                                        <label class="col-md-2 control-label">Expiry Date</label>
+                                        <div class="col-md-4">
+                                            <input type="date" class="form-control" name="expirydate" id="expirydate"
+                                                readonly>
+
+                                        </div>
+                                        <div class=" col-md-5">
                                             <button type="submit" class="btn btn-custom waves-effect waves-light btn-md"
                                                 name="submit">Submit</button>
                                         </div>
@@ -398,6 +400,100 @@ if (strlen($_SESSION['login']) == 0) {
                 $(".select2").select2();
             });
         </script>
+        <script>
+            function previewImage(event) {
+                const input = event.target;
+                const preview = document.getElementById('imagePreview');
+
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.style.display = "block";
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                } else {
+                    preview.src = "#";
+                    preview.style.display = "none";
+                }
+            }
+        </script>
+        <script>
+            function calculateAge() {
+                const dob = document.getElementById('dob').value;
+                const ageDisplay = document.getElementById('ageDisplay');
+
+                if (dob) {
+                    const birthDate = new Date(dob);
+                    const today = new Date();
+
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const m = today.getMonth() - birthDate.getMonth();
+
+                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+
+                    ageDisplay.textContent = age + " years";
+                } else {
+                    ageDisplay.textContent = "";
+                }
+            }
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const pkgtype = document.getElementById("pkgtype");
+                const joindate = document.getElementById("joindate");
+                const expirydate = document.getElementById("expirydate");
+
+                function calculateExpiryDate() {
+                    const joinDateVal = joindate.value;
+                    if (!joinDateVal) {
+                        expirydate.value = "";
+                        return;
+                    }
+
+                    const selected = pkgtype.options[pkgtype.selectedIndex];
+                    const durationText = selected.getAttribute("data-duration"); // e.g. "1 Month 10 Day"
+                    if (!durationText) {
+                        expirydate.value = "";
+                        return;
+                    }
+
+                    const regex = /(\d+)\s*(Year|Month|Day)s?/gi;
+                    const matches = [...durationText.matchAll(regex)];
+
+                    let date = new Date(joinDateVal);
+
+                    matches.forEach(match => {
+                        const number = parseInt(match[1]);
+                        const unit = match[2].toLowerCase();
+
+                        if (unit === 'year') {
+                            date.setFullYear(date.getFullYear() + number);
+                        } else if (unit === 'month') {
+                            date.setMonth(date.getMonth() + number);
+                        } else if (unit === 'day') {
+                            date.setDate(date.getDate() + number);
+                        }
+                    });
+
+                    const yyyy = date.getFullYear();
+                    const mm = String(date.getMonth() + 1).padStart(2, '0');
+                    const dd = String(date.getDate()).padStart(2, '0');
+                    expirydate.value = `${yyyy}-${mm}-${dd}`;
+                }
+
+                pkgtype.addEventListener("change", calculateExpiryDate);
+                joindate.addEventListener("change", calculateExpiryDate);
+            });
+        </script>
+
+
+
+
+
+
     </body>
 
     </html>

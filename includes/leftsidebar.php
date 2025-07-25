@@ -43,14 +43,14 @@
                                     <li><a href="manage-shift.php">Manage Shift</a></li>
                                 </ul>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="javascript:void(0);" class="waves-effect">
                                     <span>Package</span> <span class="menu-arrow"></span></a>
                                 <ul class="list-unstyled">
                                     <li><a href="add-package.php">Add Package</a></li>
                                     <li><a href="manage-package.php">Manage Package</a></li>
                                 </ul>
-                            </li>
+                            </li> -->
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect">
                                     <span>Payment Mode</span> <span class="menu-arrow"></span></a>

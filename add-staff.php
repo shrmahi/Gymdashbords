@@ -31,10 +31,10 @@ if (strlen($_SESSION['login']) == 0) {
         $status = 1;
 
         // Use generated password
-        $password = $generatedPassword; // Consider using password_hash for better security
+        $password = $generatedPassword;
 
         $query = mysqli_query($con, "INSERT INTO tblstaff(`Type`, `FirstName`, `LastName`, `Email`, `Password`, `Contact`, `Address`, `JoinningDate`, `StaffStatus`, `Is_Active`) 
-        VALUES('$type','$fname','$lname','$email','$password','$contact','$address','$joinningdate','$staffstatus','$status')");
+        VALUES('$type','$fname','$lname','$email','$generatedPassword','$contact','$address','$joinningdate','$staffstatus','$status')");
 
         if ($query) {
             // Email Details
@@ -142,24 +142,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <!-- end row -->
 
                         <div class="row">
-                            <div class="col-sm-6">
-                                <!---Success Message--->
-                            <?php if ($msg) { ?>
-                            <div class="alert alert-success" role="alert">
-                                <strong>Well done!</strong>
-                                <?php echo htmlentities($msg); ?>
-                            </div>
-                            <?php } ?>
-
-                            <!---Error Message--->
-                            <?php if ($error) { ?>
-                            <div class="alert alert-danger" role="alert">
-                                <strong>Oh snap!</strong>
-                                <?php echo htmlentities($error); ?>
-                            </div>
-                            <?php } ?>
-
-
+                            <?php include('alert_message.php'); ?>
                         </div>
                     </div>
 
@@ -179,12 +162,12 @@ if (strlen($_SESSION['login']) == 0) {
                                 <div class="form-group">
                                     <label class="col-md-2 control-label">First Name</label>
                                     <div class="col-md-5">
-                                        <input type="text" class="form-control" name="fname"
-                                            placeholder="Enter First Name" required>
+                                        <input type="text" class="form-control" name="fname" placeholder="Enter First Name"
+                                            required>
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="text" class="form-control" name="lname"
-                                            placeholder="Enter Last Name" required>
+                                        <input type="text" class="form-control" name="lname" placeholder="Enter Last Name"
+                                            required>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -200,6 +183,12 @@ if (strlen($_SESSION['login']) == 0) {
                                         <input type="text" class="form-control" name="password"
                                             value="<?php echo $generatedPassword; ?>" readonly>
                                         <small class="text-muted">This password is auto-generated.</small>
+                                        <small>
+                                            <?php echo $generatedPassword; ?>
+                                        </small>
+                                        <small>
+                                            <?php echo $password; ?>
+                                        </small>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -244,18 +233,18 @@ if (strlen($_SESSION['login']) == 0) {
 
 
 
-                    </div> <!-- container -->
+                </div> <!-- container -->
 
-                </div> <!-- content -->
+            </div> <!-- content -->
 
-                <?php include('includes/footer.php'); ?>
+            <?php include('includes/footer.php'); ?>
 
-            </div>
+        </div>
 
 
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- End Right content here -->
+        <!-- ============================================================== -->
 
 
         </div>

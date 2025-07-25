@@ -125,6 +125,7 @@ if($_GET['action']=='parmdel' && $_GET['rid'])
 <button id="addToTable" class="btn btn-success waves-effect waves-light">Add <i class="mdi mdi-plus-circle-outline" ></i></button>
 </a>
  </div>
+ <br/>
 
 												<div class="table-responsive">
                                                     <table class="table m-0 table-colored-bordered table-bordered-primary">
@@ -155,6 +156,7 @@ $cnt++;
 </tbody>
                                                   
                                                     </table>
+                                                    <h6 style="float: right;">Powered by CoreStorm</h6>
                                                 </div>
 
 

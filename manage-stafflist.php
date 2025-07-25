@@ -25,7 +25,7 @@ if (strlen($_SESSION['login']) == 0) {
     if (isset($_GET['action']) && $_GET['action'] == 'parmdel' && $_GET['rid']) {
         $id = intval($_GET['rid']);
         mysqli_query($con, "DELETE FROM tblstaff WHERE id = '$id'");
-        $delmsg = "Staff deleted permanently";
+        $msg = "Staff deleted permanently";
     }
 
     // Filter condition
@@ -75,29 +75,7 @@ if (strlen($_SESSION['login']) == 0) {
                         </div>
 
                         <div class="row">
-                            <div class="col-sm-12">
-                                <div class="alert-container">
-                                    <?php if ($msg) { ?>
-                                        <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Well done!</strong>
-                                            <?php echo htmlentities($msg); ?>
-                                        </div>
-                                    <?php } ?>
-
-                                    <?php if ($error) { ?>
-                                        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Oh snap!</strong>
-                                            <?php echo htmlentities($error); ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                            </div>
+                            <?php include('alert_message.php'); ?>
                         </div>
 
                         <div class="row">
@@ -106,10 +84,10 @@ if (strlen($_SESSION['login']) == 0) {
                                     <label>Filter by Month: </label>
                                     <input type="month" name="month" class="form-control"
                                         value="<?php echo htmlentities($_GET['month']); ?>">
-                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                    <a href="manage-stafflist.php" class="btn btn-default">Reset</a>
+                                    <button type="submit" class="btn btn-filter">Filter</button>
+                                    <a href="manage-stafflist.php" class="btn btn-reset" style="color:white">Reset</a>
                                     <a href="download-staff-pdf.php<?php echo (!empty($_GET['month'])) ? '?month=' . urlencode($_GET['month']) : ''; ?>"
-                                        class="btn btn-danger">Download PDF</a>
+                                        class="btn btn-custom">PDF <i class="mdi mdi-printer"></i></a>
                                 </form>
                             </div>
                         </div>
@@ -123,6 +101,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                     class="mdi mdi-plus-circle-outline"></i></button>
                                         </a>
                                     </div>
+                                    <br />
                                     <div class="table-responsive">
                                         <table class="table table-colored-bordered table-bordered-primary">
                                             <thead>
@@ -162,17 +141,17 @@ if (strlen($_SESSION['login']) == 0) {
                                                             <a
                                                                 href="edit-staff.php?cid=<?php echo htmlentities($row['id']); ?>">
                                                                 <i class="fa fa-pencil" style="color:#29b6f6;"></i>
-                                                            </a>
+                                                            </a>&nbsp;
                                                             <?php if ($row['Is_Active'] == 1): ?>
                                                                 <a href="manage-stafflist.php?rid=<?php echo htmlentities($row['id']); ?>&action=del"
                                                                     onclick="return confirm('Deactivate this staff?');">
                                                                     <i class="fa fa-toggle-off" style="color:red;"></i>
-                                                                </a>
+                                                                </a>&nbsp;
                                                             <?php else: ?>
                                                                 <a href="manage-stafflist.php?resid=<?php echo htmlentities($row['id']); ?>"
                                                                     onclick="return confirm('Activate this staff?');">
                                                                     <i class="fa fa-toggle-on" style="color:green;"></i>
-                                                                </a>
+                                                                </a>&nbsp;
                                                                 <a href="manage-stafflist.php?rid=<?php echo htmlentities($row['id']); ?>&action=parmdel"
                                                                     onclick="return confirm('Delete this staff permanently?');">
                                                                     <i class="fa fa-trash" style="color:#f05050;"></i>
@@ -184,6 +163,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                 } ?>
                                             </tbody>
                                         </table>
+                                        <h6 style="float: right;">Powered by CoreStorm</h6>
                                     </div>
                                 </div>
                             </div>

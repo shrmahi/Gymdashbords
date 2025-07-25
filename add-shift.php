@@ -115,31 +115,7 @@ if (strlen($_SESSION['login']) == 0) {
 
 
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <!---Success Message--->
-                                        <div class="alert-container">
-                                            <?php if ($msg) { ?>
-                                            <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Well done!</strong>
-                                                <?php echo htmlentities($msg); ?>
-                                            </div>
-                                            <?php } ?>
-
-                                            <?php if ($error) { ?>
-                                            <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                                <button type="button" class="close" data-dismiss="alert"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <strong>Oh snap!</strong>
-                                                <?php echo htmlentities($error); ?>
-                                            </div>
-                                            <?php } ?>
-                                        </div>
+                                        <?php include('alert_message.php'); ?>
 
                                     </div>
                                 </div>
@@ -150,8 +126,7 @@ if (strlen($_SESSION['login']) == 0) {
                                             <div class="form-group">
                                                 <label class="col-md-3 control-label">Master</label>
                                                 <div class="col-md-9">
-                                                    <select class="form-control" name="shifttype" id="shifttype"
-                                                        required>
+                                                    <select class="form-control" name="shifttype" id="shifttype" required>
                                                         <option value="">-- Select Type --</option>
                                                         <option value="shift" selected>Shift Type</option>
                                                         <option value="package">Package Type</option>
@@ -168,317 +143,314 @@ if (strlen($_SESSION['login']) == 0) {
 
                                     <div class="col-md-6">
                                         <!-- Shift Form -->
-                                            <div id="shift-form" class="form-section" style="display:none;">
-                                                <form method="post">
-                                                    <input type="hidden" name="formtype" value="shift">
-                                                    <div class="form-group">
+                                        <div id="shift-form" class="form-section" style="display:none;">
+                                            <form method="post">
+                                                <input type="hidden" name="formtype" value="shift">
+                                                <div class="form-group">
 
-                                                        <label class="col-md-2 control-label">Shift Type</label>
-                                                        <div class="col-md-10">
-                                                            <input type="text" class="form-control" name="shiftname"
-                                                                required>
+                                                    <label class="col-md-2 control-label">Shift Type</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="shiftname" required>
 
 
-                                                            <br>
-                                                            <button type="submit" class="btn btn-custom" name="submit">Add
-                                                                Shift</button>
-                                                        </div>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-custom" name="submit">Add
+                                                            Shift</button>
                                                     </div>
-                                                </form>
-                                            </div>
-
-
-                                            <!-- Package Form -->
-                                            <div id="package-form" class="form-section" style="display:none;">
-                                                <form method="post">
-                                                    <input type="hidden" name="formtype" value="package">
-                                                    <div class="form-group">
-                                                        <label class="col-md-2 control-label">Package Type</label>
-                                                        <div class="col-md-10">
-                                                            <input type="text" class="form-control" name="packagename"
-                                                                required>
-                                                            <br>
-                                                            <button type="submit" class="btn btn-custom" name="submit">Add
-                                                                Package</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-
-                                            <!-- Receipt Form -->
-                                            <div id="receipt-form" class="form-section" style="display:none;">
-                                                <form method="post">
-                                                    <input type="hidden" name="formtype" value="receipt">
-                                                    <div class="form-group">
-                                                        <label class="col-md-2 control-label">Receipt Type</label>
-                                                        <div class="col-md-10">
-                                                            <input type="text" class="form-control" name="receiptnumber"
-                                                                required>
-                                                            <br>
-                                                            <button type="submit" class="btn btn-custom" name="submit">Add
-                                                                Receipt</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <!-- Payment Mode-->
-                                            <div id="paymode-form" class="form-section" style="display:none;">
-                                                <form method="post">
-                                                    <input type="hidden" name="formtype" value="paymode">
-                                                    <div class="form-group">
-                                                        <label class="col-md-2 control-label">Payment Mode</label>
-                                                        <div class="col-md-10">
-                                                            <input type="text" class="form-control" name="paymode" required>
-                                                            <br>
-                                                            <button type="submit" class="btn btn-custom" name="submit">Add
-                                                                Paymode</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <!--medical history-->
-                                            <div id="medical-form" class="form-section" style="display:none;">
-                                                <form method="post">
-                                                    <input type="hidden" name="formtype" value="medical">
-                                                    <div class="form-group">
-                                                        <label class="col-md-2 control-label">Medical History</label>
-                                                        <div class="col-md-10">
-                                                            <input type="text" class="form-control" name="medicalname"
-                                                                required>
-                                                            <br>
-                                                            <button type="submit" class="btn btn-custom" name="submit">Add
-                                                                Medical</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-
+                                                </div>
+                                            </form>
                                         </div>
 
 
+                                        <!-- Package Form -->
+                                        <div id="package-form" class="form-section" style="display:none;">
+                                            <form method="post">
+                                                <input type="hidden" name="formtype" value="package">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">Package Type</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="packagename" required>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-custom" name="submit">Add
+                                                            Package</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!-- Receipt Form -->
+                                        <div id="receipt-form" class="form-section" style="display:none;">
+                                            <form method="post">
+                                                <input type="hidden" name="formtype" value="receipt">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">Receipt Type</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="receiptnumber"
+                                                            required>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-custom" name="submit">Add
+                                                            Receipt</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <!-- Payment Mode-->
+                                        <div id="paymode-form" class="form-section" style="display:none;">
+                                            <form method="post">
+                                                <input type="hidden" name="formtype" value="paymode">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">Payment Mode</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="paymode" required>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-custom" name="submit">Add
+                                                            Paymode</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <!--medical history-->
+                                        <div id="medical-form" class="form-section" style="display:none;">
+                                            <form method="post">
+                                                <input type="hidden" name="formtype" value="medical">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">Medical History</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="medicalname" required>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-custom" name="submit">Add
+                                                            Medical</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
                                     </div>
+
 
                                 </div>
+
                             </div>
                         </div>
-                        <!-- end row -->
-                        <!-- Tabel-->
-                        <!-- Tables Section -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="demo-box m-t-20">
+                    </div>
+                    <!-- end row -->
+                    <!-- Tabel-->
+                    <!-- Tables Section -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="demo-box m-t-20">
 
-                                    <!-- Shift Table -->
-                                    <div id="shift-table" class="table-section">
-                                        <h4>Shift Records</h4>
-                                        <div class="table-responsive">
-                                            <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                                <thead>
+                                <!-- Shift Table -->
+                                <div id="shift-table" class="table-section">
+                                    <h4>Shift Records</h4>
+                                    <div class="table-responsive">
+                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Shift</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT id, ShiftName FROM tblshift WHERE Is_Active=1");
+                                                $cnt = 1;
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    ?>
                                                     <tr>
-                                                        <th>#</th>
-                                                        <th>Shift</th>
-                                                        <th>Action</th>
+                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                        <td><?php echo htmlentities($row['ShiftName']); ?></td>
+                                                        <td>
+                                                            <a
+                                                                href="edit-shift.php?cid=<?php echo htmlentities($row['id']); ?>">
+                                                                <i class="fa fa-pencil" style="color: #29b6f6;"></i>
+                                                            </a>
+                                                            &nbsp;
+                                                            <a
+                                                                href="add-shift.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
+                                                                <i class="fa fa-trash-o" style="color: #f05050"></i>
+                                                            </a>
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query = mysqli_query($con, "SELECT id, ShiftName FROM tblshift WHERE Is_Active=1");
-                                                    $cnt = 1;
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        ?>
-                                                        <tr>
-                                                            <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                            <td><?php echo htmlentities($row['ShiftName']); ?></td>
-                                                            <td>
-                                                                <a
-                                                                    href="edit-shift.php?cid=<?php echo htmlentities($row['id']); ?>">
-                                                                    <i class="fa fa-pencil" style="color: #29b6f6;"></i>
-                                                                </a>
-                                                                &nbsp;
-                                                                <a
-                                                                    href="add-shift.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
-                                                                    <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $cnt++;
-                                                    } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                    <?php $cnt++;
+                                                } ?>
+                                            </tbody>
+                                        </table>
                                     </div>
-
-                                    <!-- Package Table -->
-                                    <div id="package-table" class="table-section" style="display:none;">
-                                        <h4>Package Records</h4>
-                                        <div class="table-responsive">
-                                            <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Package</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query = mysqli_query($con, "SELECT id, PackageName FROM tblpackage WHERE Is_Active=1");
-                                                    $cnt = 1;
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        ?>
-                                                        <tr>
-                                                            <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                            <td><?php echo htmlentities($row['PackageName']); ?></td>
-                                                            <td> <a
-                                                                    href="edit-shift.php?cid=<?php echo htmlentities($row['id']); ?>">
-                                                                    <i class="fa fa-pencil" style="color: #29b6f6;"></i>
-                                                                </a>
-                                                                &nbsp;
-                                                                <a
-                                                                    href="add-shift.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
-                                                                    <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $cnt++;
-                                                    } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- Receipt Table -->
-                                    <div id="receipt-table" class="table-section" style="display:none;">
-                                        <h4>Receipt Records</h4>
-                                        <div class="table-responsive">
-                                            <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Receipt Number</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query = mysqli_query($con, "SELECT id, ReceiptNumber FROM tblreceipt WHERE Is_Active=1");
-                                                    $cnt = 1;
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        ?>
-                                                        <tr>
-                                                            <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                            <td><?php echo htmlentities($row['ReceiptNumber']); ?></td>
-                                                            <td> <a
-                                                                    href="edit-package.php?cid=<?php echo htmlentities($row['id']); ?>">
-                                                                    <i class="fa fa-pencil" style="color: #29b6f6;"></i>
-                                                                </a>
-                                                                &nbsp;
-                                                                <a
-                                                                    href="add-package.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
-                                                                    <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $cnt++;
-                                                    } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- payment Table-->
-                                    <div id="paymode-table" class="table-section" style="display:none;">
-                                        <h4>Payment Modes</h4>
-                                        <div class="table-responsive">
-                                            <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Payment Modes</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query = mysqli_query($con, "SELECT id, PaymentMode FROM tblpaymode WHERE Is_Active=1");
-                                                    $cnt = 1;
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        ?>
-                                                        <tr>
-                                                            <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                            <td><?php echo htmlentities($row['PaymentMode']); ?></td>
-                                                            <td> <a
-                                                                    href="edit-paymode.php?cid=<?php echo htmlentities($row['id']); ?>">
-                                                                    <i class="fa fa-pencil" style="color: #29b6f6;"></i>
-                                                                </a>
-                                                                &nbsp;
-                                                                <a
-                                                                    href="add-paymode.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
-                                                                    <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $cnt++;
-                                                    } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- Medical History-->
-                                    <div id="medical-table" class="table-section" style="display:none;">
-                                        <h4>Medical Records</h4>
-                                        <div class="table-responsive">
-                                            <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Medical Records</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    $query = mysqli_query($con, "SELECT id, MedicalRecord FROM tblmedical WHERE Is_Active=1");
-                                                    $cnt = 1;
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        ?>
-                                                        <tr>
-                                                            <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                            <td><?php echo htmlentities($row['MedicalRecord']); ?></td>
-                                                            <td> <a
-                                                                    href="edit-medicalhist.php?cid=<?php echo htmlentities($row['id']); ?>">
-                                                                    <i class="fa fa-pencil" style="color: #29b6f6;"></i>
-                                                                </a>
-                                                                &nbsp;
-                                                                <a
-                                                                    href="add-medicalhist.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
-                                                                    <i class="fa fa-trash-o" style="color: #f05050"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $cnt++;
-                                                    } ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
                                 </div>
+
+                                <!-- Package Table -->
+                                <div id="package-table" class="table-section" style="display:none;">
+                                    <h4>Package Records</h4>
+                                    <div class="table-responsive">
+                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Package</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT id, PackageName FROM tblpackage WHERE Is_Active=1");
+                                                $cnt = 1;
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    ?>
+                                                    <tr>
+                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                        <td><?php echo htmlentities($row['PackageName']); ?></td>
+                                                        <td> <a
+                                                                href="edit-shift.php?cid=<?php echo htmlentities($row['id']); ?>">
+                                                                <i class="fa fa-pencil" style="color: #29b6f6;"></i>
+                                                            </a>
+                                                            &nbsp;
+                                                            <a
+                                                                href="add-shift.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
+                                                                <i class="fa fa-trash-o" style="color: #f05050"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <?php $cnt++;
+                                                } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Receipt Table -->
+                                <div id="receipt-table" class="table-section" style="display:none;">
+                                    <h4>Receipt Records</h4>
+                                    <div class="table-responsive">
+                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Receipt Number</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT id, ReceiptNumber FROM tblreceipt WHERE Is_Active=1");
+                                                $cnt = 1;
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    ?>
+                                                    <tr>
+                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                        <td><?php echo htmlentities($row['ReceiptNumber']); ?></td>
+                                                        <td> <a
+                                                                href="edit-package.php?cid=<?php echo htmlentities($row['id']); ?>">
+                                                                <i class="fa fa-pencil" style="color: #29b6f6;"></i>
+                                                            </a>
+                                                            &nbsp;
+                                                            <a
+                                                                href="add-package.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
+                                                                <i class="fa fa-trash-o" style="color: #f05050"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <?php $cnt++;
+                                                } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- payment Table-->
+                                <div id="paymode-table" class="table-section" style="display:none;">
+                                    <h4>Payment Modes</h4>
+                                    <div class="table-responsive">
+                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Payment Modes</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT id, PaymentMode FROM tblpaymode WHERE Is_Active=1");
+                                                $cnt = 1;
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    ?>
+                                                    <tr>
+                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                        <td><?php echo htmlentities($row['PaymentMode']); ?></td>
+                                                        <td> <a
+                                                                href="edit-paymode.php?cid=<?php echo htmlentities($row['id']); ?>">
+                                                                <i class="fa fa-pencil" style="color: #29b6f6;"></i>
+                                                            </a>
+                                                            &nbsp;
+                                                            <a
+                                                                href="add-paymode.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
+                                                                <i class="fa fa-trash-o" style="color: #f05050"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <?php $cnt++;
+                                                } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Medical History-->
+                                <div id="medical-table" class="table-section" style="display:none;">
+                                    <h4>Medical Records</h4>
+                                    <div class="table-responsive">
+                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Medical Records</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $query = mysqli_query($con, "SELECT id, MedicalRecord FROM tblmedical WHERE Is_Active=1");
+                                                $cnt = 1;
+                                                while ($row = mysqli_fetch_array($query)) {
+                                                    ?>
+                                                    <tr>
+                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                        <td><?php echo htmlentities($row['MedicalRecord']); ?></td>
+                                                        <td> <a
+                                                                href="edit-medicalhist.php?cid=<?php echo htmlentities($row['id']); ?>">
+                                                                <i class="fa fa-pencil" style="color: #29b6f6;"></i>
+                                                            </a>
+                                                            &nbsp;
+                                                            <a
+                                                                href="add-medicalhist.php?rid=<?php echo htmlentities($row['id']); ?>&action=del">
+                                                                <i class="fa fa-trash-o" style="color: #f05050"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <?php $cnt++;
+                                                } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
+                    </div>
 
 
 
 
 
-                    </div> <!-- container -->
+                </div> <!-- container -->
 
-                </div> <!-- content -->
+            </div> <!-- content -->
 
-                <?php include('includes/footer.php'); ?>
+            <?php include('includes/footer.php'); ?>
 
-            </div>
+        </div>
         </div>
 
         <script>

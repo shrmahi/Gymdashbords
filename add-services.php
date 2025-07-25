@@ -96,22 +96,7 @@ if (strlen($_SESSION['login']) == 0) {
 
 
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <!---Success Message--->
-                                        <?php if ($msg) { ?>
-                                        <div class="alert alert-success" role="alert">
-                                            <strong>Well done!</strong>
-                                            <?php echo htmlentities($msg); ?>
-                                        </div>
-                                        <?php } ?>
-
-                                        <!---Error Message--->
-                                        <?php if ($error) { ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            <strong>Oh snap!</strong>
-                                            <?php echo htmlentities($error); ?>
-                                        </div>
-                                        <?php } ?>
+                                        <?php include('alert_message.php'); ?>
 
 
                                     </div>
@@ -153,65 +138,64 @@ if (strlen($_SESSION['login']) == 0) {
                         </div>
                     </div>
                     <!-- end row -->
-                        <!-- Tabel-->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="demo-box m-t-20">
+                    <!-- Tabel-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="demo-box m-t-20">
 
-                                    <div class="table-responsive">
-                                        <table class="table m-0 table-colored-bordered table-bordered-primary">
-                                            <thead>
+                                <div class="table-responsive">
+                                    <table class="table m-0 table-colored-bordered table-bordered-primary">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Services Name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $query = mysqli_query($con, "Select id,ServiceName from  tblservices where Is_Active=1");
+                                            $cnt = 1;
+                                            while ($row = mysqli_fetch_array($query)) {
+                                                ?>
+
                                                 <tr>
-                                                    <th>#</th>
-                                                    <th>Services Name</th>
-                                                    <th>Action</th>
+                                                    <th scope="row"><?php echo htmlentities($cnt); ?></th>
+                                                    <td><?php echo htmlentities($row['ServiceName']); ?></td>
+                                                    <td><a href="edit-services.php?cid=<?php echo htmlentities($row['id']); ?>"><i
+                                                                class="fa fa-pencil" style="color: #29b6f6;"></i></a>
+                                                        &nbsp;<a
+                                                            href="add-services.php?rid=<?php echo htmlentities($row['id']); ?>&&action=del">
+                                                            <i class="fa fa-trash-o" style="color: #f05050"></i></a> </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
                                                 <?php
-                                                $query = mysqli_query($con, "Select id,ServiceName from  tblservices where Is_Active=1");
-                                                $cnt = 1;
-                                                while ($row = mysqli_fetch_array($query)) {
-                                                    ?>
+                                                $cnt++;
+                                            } ?>
+                                        </tbody>
 
-                                                    <tr>
-                                                        <th scope="row"><?php echo htmlentities($cnt); ?></th>
-                                                        <td><?php echo htmlentities($row['ServiceName']); ?></td>
-                                                        <td><a
-                                                                href="edit-services.php?cid=<?php echo htmlentities($row['id']); ?>"><i
-                                                                    class="fa fa-pencil" style="color: #29b6f6;"></i></a>
-                                                            &nbsp;<a
-                                                                href="add-services.php?rid=<?php echo htmlentities($row['id']); ?>&&action=del">
-                                                                <i class="fa fa-trash-o" style="color: #f05050"></i></a> </td>
-                                                    </tr>
-                                                    <?php
-                                                    $cnt++;
-                                                } ?>
-                                            </tbody>
-
-                                        </table>
-                                    </div>
-
-
-
-
+                                    </table>
                                 </div>
 
-                            </div>
 
+
+
+                            </div>
 
                         </div>
 
 
+                    </div>
 
 
-                    </div> <!-- container -->
 
-                </div> <!-- content -->
 
-                <?php include('includes/footer.php'); ?>
+                </div> <!-- container -->
 
-            </div>
+            </div> <!-- content -->
+
+            <?php include('includes/footer.php'); ?>
+
+        </div>
         </div>
 
         <script>

@@ -14,10 +14,9 @@ if (strlen($_SESSION['login']) == 0) {
         $status = 1;
         $query = mysqli_query($con, "insert into tblplan(`PlanName`, `Duration`, `Days`, `Price`,`Is_Active`) values('$pkgtype','$duration','$days','$price','$status')");
         if ($query) {
-            // $msg = "Plan added ";
-            header("Location: manage-plan.php");
+            $msg = "Plan successfully added.";
         } else {
-            $error = "Something went wrong . Please try again.";
+            $error = "Something went wrong. Please try again.";
         }
     }
 
@@ -105,29 +104,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <!-- end row -->
 
                         <div class="row">
-                            <div class="col-sm-6">
-                                <!---Success Message--->
-                            <div class="alert-container">
-                                <?php if ($msg) { ?>
-                                <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    <strong>Well done!</strong>
-                                    <?php echo htmlentities($msg); ?>
-                                </div>
-                                <?php } ?>
-
-                                <?php if ($error) { ?>
-                                <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    <strong>Oh snap!</strong>
-                                    <?php echo htmlentities($error); ?>
-                                </div>
-                                <?php } ?>
-                            </div>
+                            <?php include('alert_message.php'); ?>
 
 
                         </div>
@@ -160,39 +137,8 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class=" col-md-6 form-group m-b-20">
                                             <label for="exampleInputEmail1">Days</label>
                                             <select class="form-control" name="days" id="days"
-                                                onChange="getSubCat(this.value);" required>
-                                                <option value="">Select Days </option>
-                                                <option value="1 Day">1 Day</option>
-                                                <option value="2 Day">2 Day</option>
-                                                <option value="3 Day">3 Day</option>
-                                                <option value="4 Day">4 Day</option>
-                                                <option value="5 Day">5 Day</option>
-                                                <option value="6 Day">6 Day</option>
-                                                <option value="7 Day">7 Day</option>
-                                                <option value="8 Day">8 Day</option>
-                                                <option value="9 Day">9 Day</option>
-                                                <option value="10 Day">10 Day</option>
-                                                <option value="11 Day">11 Day</option>
-                                                <option value="12 Day">12 Day</option>
-                                                <option value="13 Day">13 Day</option>
-                                                <option value="14 Day">14 Day</option>
-                                                <option value="15 Day">15 Day</option>
-                                                <option value="16 Day">16 Day</option>
-                                                <option value="17 Day">17 Day</option>
-                                                <option value="18 Day">18 Day</option>
-                                                <option value="19 Day">19 Day</option>
-                                                <option value="20 Day">20 Day</option>
-                                                <option value="21 Day">21 Day</option>
-                                                <option value="22 Day">22 Day</option>
-                                                <option value="23 Day">23 Day</option>
-                                                <option value="24 Day">24 Day</option>
-                                                <option value="25 Day">25 Day</option>
-                                                <option value="26 Day">26 Day</option>
-                                                <option value="27 Day">27 Day</option>
-                                                <option value="28 Day">28 Day</option>
-                                                <option value="29 Day">29 Day</option>
-                                                <option value="30 Day">30 Day</option>
-                                                <option value="31 Day">31 Day</option>
+                                                onchange="getSubCat(this.value);" required>
+                                                <option value="">Select Days</option>
                                             </select>
                                         </div>
                                         <div class="form-group m-b-20">
@@ -202,30 +148,30 @@ if (strlen($_SESSION['login']) == 0) {
                                         </div>
 
                                         <button type="submit" name="submit"
-                                            class="btn btn-success waves-effect waves-light">Save and Post</button>
-                                        <button type="button"
-                                            class="btn btn-danger waves-effect waves-light">Discard</button>
+                                            class="btn btn-success waves-effect waves-light">Save</button>
+
+
                                     </form>
                                 </div>
                             </div> <!-- end p-20 -->
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
+                        </div> <!-- end col -->
+                    </div>
+                    <!-- end row -->
 
 
 
-                    </div> <!-- container -->
+                </div> <!-- container -->
 
-                </div> <!-- content -->
+            </div> <!-- content -->
 
-                <?php include('includes/footer.php'); ?>
+            <?php include('includes/footer.php'); ?>
 
-            </div>
+        </div>
 
 
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- End Right content here -->
+        <!-- ============================================================== -->
 
 
         </div>
@@ -287,8 +233,19 @@ if (strlen($_SESSION['login']) == 0) {
 
 
 
+        <script>
+            // Populate the "Days" dropdown with options 0 to 31
+            const daysDropdown = document.getElementById("days");
 
+            for (let i = 0; i <= 31; i++) {
+                const option = document.createElement("option");
+                option.value = i + " Day";
+                option.textContent = i + (i === 1 ? " Day" : " Days");
+                daysDropdown.appendChild(option);
+            }
+        </script>
     </body>
+
 
     </html>
 <?php } ?>

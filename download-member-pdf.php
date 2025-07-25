@@ -38,7 +38,7 @@ while ($row = mysqli_fetch_assoc($query)) {
     </tr>';
 }
 $html .= '</table>';
-
+$html .= '<h6 style="text-align:right;">Powered by CoreStorm</h6>';
 $pdf->writeHTML($html, true, false, true, false, '');
 $pdf->Output('member_list.pdf', 'D');
 ?>

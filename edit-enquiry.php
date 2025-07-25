@@ -100,119 +100,121 @@ if (strlen($_SESSION['login']) == 0) {
 
 
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <!---Success Message--->
-                                        <?php if ($msg) { ?>
-                                        <div class="alert alert-success" role="alert">
-                                            <strong>Well done!</strong>
-                                            <?php echo htmlentities($msg); ?>
-                                        </div>
-                                        <?php } ?>
-
-                                        <!---Error Message--->
-                                        <?php if ($error) { ?>
-                                        <div class="alert alert-danger" role="alert">
-                                            <strong>Oh snap!</strong>
-                                            <?php echo htmlentities($error); ?>
-                                        </div>
-                                        <?php } ?>
-
-
-                                    </div>
-                                </div>
-
-                                <?php
-                                $catid = intval($_GET['cid']);
-                                $query = mysqli_query($con, "Select id,`FirstName`, `LastName`, `Email`, `Number`, `EnquiryFor`, `EnquiryOn` from  tblenquiry where Is_Active=1 and id='$catid'");
-                                $cnt = 1;
-                                while ($row = mysqli_fetch_array($query)) {
-                                    ?>
-
-
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <form class="form-horizontal" name="category" method="post">
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">Name</label>
-                                                <div class="col-md-5">
-                                                    <input type="text" class="form-control"
-                                                        value="<?php echo htmlentities($row['FirstName']); ?>"
-                                                        name="fname" required>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <input type="text" class="form-control"
-                                                        value="<?php echo htmlentities($row['LastName']); ?>"
-                                                        name="lname" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">Email</label>
-                                                <div class="col-md-10">
-                                                    <input type="email" class="form-control"
-                                                        value="<?php echo htmlentities($row['Email']); ?>" name="email"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">Contact Number</label>
-                                                <div class="col-md-10">
-                                                    <input type="text" class="form-control"
-                                                        value="<?php echo htmlentities($row['Number']); ?>"
-                                                        name="number" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">Enquiry For</label>
-                                                <div class="col-md-10">
-                                                    <input type="text" class="form-control"
-                                                        value="<?php echo htmlentities($row['EnquiryFor']); ?>"
-                                                        name="enquiryfor" required>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">Enquiry On</label>
-                                                <div class="col-md-10">
-                                                    <input type="text" class="form-control"
-                                                        value="<?php echo htmlentities($row['EnquiryOn']); ?>"
-                                                        name="enquiryon" required>
-                                                </div>
-                                            </div>
-
-
-                                            <?php } ?>
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label">&nbsp;</label>
-                                                <div class="col-md-10">
-
-                                                    <button type="submit"
-                                                        class="btn btn-custom waves-effect waves-light btn-md"
-                                                        name="submit">
-                                                        Update
+                                        <div class="alert-container">
+                                            <?php if ($msg) { ?>
+                                                <div class="alert alert-success alert-dismissible fade in" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
                                                     </button>
+                                                    <strong>Well done!</strong>
+                                                    <?php echo htmlentities($msg); ?>
                                                 </div>
-                                            </div>
+                                            <?php } ?>
 
-                                        </form>
+                                            <?php if ($error) { ?>
+                                                <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <strong>Oh snap!</strong>
+                                                    <?php echo htmlentities($error); ?>
+                                                </div>
+                                            <?php } ?>
+                                        </div>
+                                    </div>
+
+                                    <?php
+                                    $catid = intval($_GET['cid']);
+                                    $query = mysqli_query($con, "Select id,`FirstName`, `LastName`, `Email`, `Number`, `EnquiryFor`, `EnquiryOn` from  tblenquiry where Is_Active=1 and id='$catid'");
+                                    $cnt = 1;
+                                    while ($row = mysqli_fetch_array($query)) {
+                                        ?>
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <form class="form-horizontal" name="category" method="post">
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">Name</label>
+                                                        <div class="col-md-5">
+                                                            <input type="text" class="form-control"
+                                                                value="<?php echo htmlentities($row['FirstName']); ?>"
+                                                                name="fname" required>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <input type="text" class="form-control"
+                                                                value="<?php echo htmlentities($row['LastName']); ?>"
+                                                                name="lname" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">Email</label>
+                                                        <div class="col-md-10">
+                                                            <input type="email" class="form-control"
+                                                                value="<?php echo htmlentities($row['Email']); ?>" name="email"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">Contact Number</label>
+                                                        <div class="col-md-10">
+                                                            <input type="text" class="form-control"
+                                                                value="<?php echo htmlentities($row['Number']); ?>"
+                                                                name="number" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">Enquiry For</label>
+                                                        <div class="col-md-10">
+                                                            <input type="text" class="form-control"
+                                                                value="<?php echo htmlentities($row['EnquiryFor']); ?>"
+                                                                name="enquiryfor" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-2 control-label">Enquiry On</label>
+                                                        <div class="col-md-10">
+                                                            <input type="text" class="form-control"
+                                                                value="<?php echo htmlentities($row['EnquiryOn']); ?>"
+                                                                name="enquiryon" required>
+                                                        </div>
+                                                    </div>
+
+
+                                                <?php } ?>
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label">&nbsp;</label>
+                                                    <div class="col-md-10">
+
+                                                        <button type="submit"
+                                                            class="btn btn-custom waves-effect waves-light btn-md"
+                                                            name="submit">
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </form>
+                                        </div>
+
+
                                     </div>
 
 
+
+
+
+
+
+
+
+
+
                                 </div>
-
-
-
-
-
-
-
-
-
-
-
                             </div>
                         </div>
-                    </div>
-                    <!-- end row -->
+                        <!-- end row -->
 
 
                     </div> <!-- container -->
