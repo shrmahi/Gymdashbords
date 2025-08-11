@@ -40,7 +40,7 @@
                     <ul
                         class="dropdown-menu dropdown-menu-right arrow-dropdown-menu arrow-menu-right user-list notify-list">
                         <li>
-                            <h5>Hi, Admin</h5>
+                            <h5>Hi, <?php echo htmlentities($_SESSION['username']); ?></h5>
                         </li>
 
                         <li><a href="change-password.php"><i class="ti-settings m-r-5"></i> Change Password</a></li>

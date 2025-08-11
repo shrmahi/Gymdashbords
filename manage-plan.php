@@ -2,34 +2,48 @@
 session_start();
 include('includes/config.php');
 error_reporting(0);
-if(strlen($_SESSION['login'])==0)
-  { 
-header('location:index.php');
-}
-else{
-if($_GET['action']=='del' && $_GET['rid'])
-{
-	$id=intval($_GET['rid']);
-	$query=mysqli_query($con,"update tblplan set Is_Active='0' where id='$id'");
-	$msg="Plan deleted ";
-}
-// Code for restore
-if($_GET['resid'])
-{
-	$id=intval($_GET['resid']);
-	$query=mysqli_query($con,"update tblplan set Is_Active='1' where id='$id'");
-	$msg="Plan restored successfully";
-}
+if (strlen($_SESSION['login']) == 0) {
+    header('location:index.php');
+    exit();
+} else {
+    // Delete
+    if ($_GET['action'] == 'del' && $_GET['rid']) {
+        $id = intval($_GET['rid']);
+        mysqli_query($con, "UPDATE tblplan SET Is_Active='0' WHERE id='$id'");
+        $msg = "Plan deleted";
+    }
 
-// Code for Forever deletionparmdel
-if($_GET['action']=='parmdel' && $_GET['rid'])
-{
-	$id=intval($_GET['rid']);
-	$query=mysqli_query($con,"delete from  tblplan  where id='$id'");
-	$delmsg="Plan deleted forever";
-}
+    // Restore
+    if ($_GET['resid']) {
+        $id = intval($_GET['resid']);
+        mysqli_query($con, "UPDATE tblplan SET Is_Active='1' WHERE id='$id'");
+        $msg = "Plan restored successfully";
+    }
 
-?>
+    // Permanent delete
+    if ($_GET['action'] == 'parmdel' && $_GET['rid']) {
+        $id = intval($_GET['rid']);
+        mysqli_query($con, "DELETE FROM tblplan WHERE id='$id'");
+        $delmsg = "Plan deleted forever";
+    }
+    // Limit per page
+    $limit = 5;
+
+    // Get current page from URL, default is 1
+    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * $limit;
+
+    // Fetch limited data
+    $query = mysqli_query($con, "SELECT * FROM tblplan WHERE Is_Active = 1 ORDER BY id DESC LIMIT $limit OFFSET $offset");
+
+    // Count total records
+    $totalQuery = mysqli_query($con, "SELECT COUNT(*) AS total FROM tblplan WHERE Is_Active = 1");
+    $totalRow = mysqli_fetch_assoc($totalQuery);
+    $totalRecords = $totalRow['total'];
+    $totalPages = ceil($totalRecords / $limit);
+    
+    ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -131,12 +145,12 @@ if($_GET['action']=='parmdel' && $_GET['rid'])
                                     <div class="row">
 										<div class="col-md-12">
 											<div class="demo-box m-t-20">
-<div class="m-b-30">
-<a href="add-plan.php">
-<button id="addToTable" class="btn btn-success waves-effect waves-light"> <i class="mdi mdi-plus-circle-outline" ></i>Add</button>
-</a>
- </div>
- <br/>
+                                            <div class="m-b-30">
+                                            <a href="add-plan.php">
+                                            <button id="addToTable" class="btn btn-success waves-effect waves-light"> <i class="mdi mdi-plus-circle-outline" ></i> Add Plan</button>
+                                            </a>
+                                            </div>
+                                            <br/>
 
 												<div class="table-responsive">
                                                     <table class="table m-0 table-colored-bordered table-bordered-primary table-bordered">
@@ -171,6 +185,43 @@ $cnt++;
 </tbody>
                                                   
                                                     </table>
+                                                    <br/>
+                                                    <br/>
+                                                    <div class="pagination-wrapper">
+                                            <div class="entries-info">
+                                                <span>Showing</span>
+                                                <select onchange="changeLimit(this.value)">
+                                                    <option <?php if ($limit == 10)
+                                                        echo "selected"; ?>>10</option>
+                                                    <option <?php if ($limit == 25)
+                                                        echo "selected"; ?>>25</option>
+                                                    <option <?php if ($limit == 50)
+                                                        echo "selected"; ?>>50</option>
+                                                    <option <?php if ($limit == 100)
+                                                        echo "selected"; ?>>100</option>
+                                                </select>
+                                                <span>of <?php echo $totalRecords; ?> entries</span>
+                                            </div>
+
+                                            <div class="pagination">
+                                                <?php if ($page > 1): ?>
+                                                    <a
+                                                        href="?page=<?php echo $page - 1; ?>&month=<?php echo urlencode($_GET['month'] ?? ''); ?>">Previous</a>
+                                                <?php endif; ?>
+
+                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                                    <a href="?page=<?php echo $i; ?>&month=<?php echo urlencode($_GET['month'] ?? ''); ?>"
+                                                        class="<?php echo ($page == $i) ? 'active' : ''; ?>">
+                                                        <?php echo $i; ?>
+                                                    </a>
+                                                <?php endfor; ?>
+
+                                                <?php if ($page < $totalPages): ?>
+                                                    <a
+                                                        href="?page=<?php echo $page + 1; ?>&month=<?php echo urlencode($_GET['month'] ?? ''); ?>">Next</a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
                                                     <h6 style="float: right;">Powered by CoreStorm</h6>
                                                 </div>
 

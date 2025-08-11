@@ -121,22 +121,15 @@ if (strlen($_SESSION['login']) == 0) {
                                 <label for="month" class="mr-2">Filter by Month:</label>
                                 <input type="month" name="month" id="month" class="form-control mr-2"
                                     value="<?php //echo htmlentities($selectedMonth); ?>" required>
-                                <label for="year" class="mr-2 ml-3">Filter by Year:</label>
-                                <select name="year" id="year" class="form-control mr-2">
-                                    <option value="">--Select Year--</option>
-                                    <?php
-                                    $currentYear = date('Y');
-                                    for ($i = $currentYear; $i >= 2020; $i--) {
-                                        $selected = ($i == htmlentities($selectedYear)) ? 'selected' : '';
-                                        echo "<option value=\"$i\" $selected>$i</option>";
-                                    }
-                                    ?>
-                                </select>
                                 <button type="submit" class="btn btn-filter">Filter</button>
                                 <a href="manage-enquiry.php" class="btn btn-reset ml-2" style="color: white;">Reset</a>
-                                <button id="printPDF" class="btn btn-custom waves-effect waves-light">
-                                    <i class="mdi mdi-printer"></i>PDF
-                                </button>
+                                <a href="add-member.php" class="btn btn-success">
+                                    <i class="mdi mdi-plus-circle-outline"></i> Add Enquiry
+                                </a>&nbsp;
+                                <a href="download-member-pdf.php<?php //echo (!empty($_GET['month'])) ? '?month=' . urlencode($_GET['month']) : ''; ?>"
+                                    class="btn btn-custom" style="margin-right:5px">
+                                    <i class="mdi mdi-printer"></i> Export
+                                </a>
 
                             </form>
                         </div>
@@ -152,16 +145,6 @@ if (strlen($_SESSION['login']) == 0) {
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="demo-box m-t-20">
-                                    <div class="m-b-30 d-flex gap-2">
-                                        <a href="add-enquiry.php">
-                                            <button id="addToTable" class="btn btn-success waves-effect waves-light">
-                                                <i class="mdi mdi-plus-circle-outline"></i>
-                                            </button>
-                                        </a>
-                                        <!-- <button id="printPDF" class="btn btn-custom waves-effect waves-light">
-                                            Print PDF <i class="mdi mdi-printer"></i>
-                                        </button> -->
-                                    </div>
                                     <br />
 
                                     <div class="table-responsive" id="enquiryTablePDF">
@@ -209,7 +192,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                             </a>&nbsp;
                                                             <a href="add-member.php"><i class="fa fa-plus"
                                                                     style="color:green"></i></a>
-                                                        </td> 
+                                                        </td>
                                                     </tr>
                                                     <?php $cnt++;
                                                 } ?>
@@ -218,61 +201,6 @@ if (strlen($_SESSION['login']) == 0) {
                                         <h6 style="float: right;">Powered by CoreStorm</h6>
 
                                         <!-- Add a wrapper div with a class for centering -->
-                                        <div class="custom-pagination"
-                                            style="display: flex; justify-content: center; margin-top: 20px;">
-                                            <ul>
-                                                <!-- First Page Link -->
-                                                <?php if ($page > 1): ?>
-                                                    <li><a
-                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>">First</a>
-                                                    </li>
-                                                <?php else: ?>
-                                                    <li><span>First</span></li>
-                                                <?php endif; ?>
-
-                                                <!-- Prev Link -->
-                                                <?php if ($page > 1): ?>
-                                                    <li><a
-                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>">Prev</a>
-                                                    </li>
-                                                <?php else: ?>
-                                                    <li><span>Prev</span></li>
-                                                <?php endif; ?>
-
-                                                <!-- Numbered Page Links -->
-                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                                    <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
-                                                        <?php if ($i == $page): ?>
-                                                            <span style="font-weight: bold;"><?php echo $i; ?></span>
-                                                        <?php else: ?>
-                                                            <a
-                                                                href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>"><?php echo $i; ?></a>
-                                                        <?php endif; ?>
-                                                    </li>
-                                                <?php endfor; ?>
-
-                                                <!-- Next Link -->
-                                                <?php if ($page < $totalPages): ?>
-                                                    <li><a
-                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>">Next</a>
-                                                    </li>
-                                                <?php else: ?>
-                                                    <li><span>Next</span></li>
-                                                <?php endif; ?>
-
-                                                <!-- Last Page Link -->
-                                                <?php if ($page < $totalPages): ?>
-                                                    <li><a
-                                                            href="?<?php echo http_build_query(array_merge($_GET, ['page' => $totalPages])); ?>">Last</a>
-                                                    </li>
-                                                <?php else: ?>
-                                                    <li><span>Last</span></li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </div>
-
-
-
 
                                     </div>
                                 </div>

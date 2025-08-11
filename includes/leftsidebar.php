@@ -15,23 +15,39 @@
                 <!-- Admin only -->
                 <?php if ($_SESSION['utype'] == '1'): ?>
                     <li class="has_sub">
-                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
-                            <span>Members</span> <span class="menu-arrow"></span></a>
-                        <ul class="list-unstyled">
+                        <a href="manage-branches.php" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                            <span>Branches</span></a>
+                    </li>
+                    <li class="has_sub">
+                        <a href="manage-memberlist.php" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
+                            <span>Members</span></a>
+                        <!-- <ul class="list-unstyled">
                             <li><a href="add-member.php">Add Member</a></li>
                             <li><a href="manage-memberlist.php">Member List</a></li>
                             <li><a href="inactive-member.php">Inactive Member</a></li>
-                        </ul>
+                        </ul> -->
+                    </li>
+                    <li class="has_sub">
+                        <a href="manage-enquiry.php" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
+                            <span>Leads & CRM</span> </a>
+                        <!-- <ul class="list-unstyled">
+                            <li><a href="add-enquiry.php">Add Enquiry</a></li>
+                            <li><a href="manage-enquiry.php">All Enquiry</a></li>
+                        </ul> -->
+                    </li>
+                    <li class="has_sub">
+                        <a href="manage-package.php" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                            <span>Plan/ Package</span></a>
                     </li>
                     <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
-                            <span>Plan</span> <span class="menu-arrow"></span></a>
-                        <ul class="list-unstyled">
-                            <li><a href="add-plan.php">Add Plan</a></li>
-                            <li><a href="manage-plan.php">All Plan</a></li>
-                        </ul>
+                            <span>Payments</span></a>
                     </li>
                     <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                            <span>Analytics</span></a>
+                    </li>
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
                             <span>Masters</span> <span class="menu-arrow"></span></a>
                         <ul class="list-unstyled">
@@ -43,14 +59,7 @@
                                     <li><a href="manage-shift.php">Manage Shift</a></li>
                                 </ul>
                             </li>
-                            <!-- <li>
-                                <a href="javascript:void(0);" class="waves-effect">
-                                    <span>Package</span> <span class="menu-arrow"></span></a>
-                                <ul class="list-unstyled">
-                                    <li><a href="add-package.php">Add Package</a></li>
-                                    <li><a href="manage-package.php">Manage Package</a></li>
-                                </ul>
-                            </li> -->
+
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect">
                                     <span>Payment Mode</span> <span class="menu-arrow"></span></a>
@@ -74,47 +83,41 @@
                                 </ul>
                             </li>
                         </ul>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
                             <span>Followups</span> <span class="menu-arrow"></span></a>
-                    </li>
-                    <li class="has_sub">
-                        <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
-                            <span>Enquiry</span> <span class="menu-arrow"></span></a>
-                        <ul class="list-unstyled">
-                            <li><a href="add-enquiry.php">Add Enquiry</a></li>
-                            <li><a href="manage-enquiry.php">All Enquiry</a></li>
-                        </ul>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
                             <span>Report</span> <span class="menu-arrow"></span></a>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
                             <span>Personal Training</span> <span class="menu-arrow"></span></a>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
                             <span>Staff</span> <span class="menu-arrow"></span></a>
                         <ul class="list-unstyled">
                             <li><a href="add-staff.php">Add Staff</a></li>
                             <li><a href="manage-stafflist.php">Staff List</a></li>
                         </ul>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+                    <!-- <li class="has_sub">
                         <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
                             <span>Services</span> <span class="menu-arrow"></span></a>
                         <ul class="list-unstyled">
                             <li><a href="add-services.php">Add Services</a></li>
                             <li><a href="manage-services.php">All Services</a></li>
                         </ul>
-                    </li>
-                    <li class="has_sub">
+                    </li> -->
+                    <!-- <li class="has_sub">
                         <a href="register-gym.php" class="waves-effect"><i class="mdi mdi-dumbbell"></i>
                             <span>GYM Register</span></a>
-                    </li>
+                    </li> -->
                 <?php endif; ?>
                 <!-- Subadmin only -->
                 <?php if ($_SESSION['utype'] == '2'): ?>
@@ -140,12 +143,19 @@
                     <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-wrench"></i>
                         <span>Settings</span></a>
                 </li>
+
+
+            </ul>
+            <hr class="hr-bottom" style="margin-top:60%;" />
+            <ul>
+                <li><a href="logout.php" class="waves-effect"><i class="mdi mdi-account"></i>
+                        <span><?php echo htmlentities($_SESSION['username']); ?></span></a></li>
                 <li>
                     <a href="logout.php" class="waves-effect"><i class="mdi mdi-power"></i>
                         <span>Logout</span></a>
                 </li>
-
             </ul>
+
         </div>
         <!-- Sidebar -->
         <div class="clearfix"></div>
