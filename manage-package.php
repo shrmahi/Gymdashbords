@@ -6,6 +6,13 @@ error_reporting(0);
 if (strlen($_SESSION['login']) == 0) {
     header('location:index.php');
 } else {
+    // DELETE PACKAGE
+    if (isset($_GET['delete_id'])) {
+        $delete_id = intval($_GET['delete_id']);
+        $query = mysqli_query($con, "DELETE FROM tblplan WHERE id='$delete_id'");
+        $msg = $query ? "Package deleted successfully." : "Delete failed. Try again.";
+    }
+    // ADD / UPDATE PACKAGE
     if (isset($_POST['submit'])) {
         $package_id = isset($_POST['package_id']) ? intval($_POST['package_id']) : 0;
         $package_name = mysqli_real_escape_string($con, $_POST['package_name']);
@@ -30,19 +37,20 @@ if (strlen($_SESSION['login']) == 0) {
         }
     }
     ?>
+
     <!DOCTYPE html>
     <html lang="en">
 
     <head>
-        <title>Gym Dashboard | Manage Package</title>
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="assets/css/core.css" rel="stylesheet" />
-        <link href="assets/css/components.css" rel="stylesheet" />
-        <link href="assets/css/icons.css" rel="stylesheet" />
-        <link href="assets/css/pages.css" rel="stylesheet" />
-        <link href="assets/css/menu.css" rel="stylesheet" />
-        <link href="assets/css/responsive.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <title>Gym Dashboard | Manage Plan/Package</title>
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
         <script src="assets/js/modernizr.min.js"></script>
     </head>
 
@@ -50,7 +58,6 @@ if (strlen($_SESSION['login']) == 0) {
         <div id="wrapper">
             <?php include('includes/topheader.php'); ?>
             <?php include('includes/leftsidebar.php'); ?>
-
             <div class="content-page">
                 <div class="content">
                     <div class="container">
@@ -107,10 +114,10 @@ if (strlen($_SESSION['login']) == 0) {
                         <!-- Package Cards -->
                         <div class="row">
                             <?php
-                            $query = mysqli_query($con, "SELECT `id`, `PlanName`, `Duration`, `Days`, `Price`, `PostingDate`, `UpdationDate`, `Is_Active` FROM `tblplan` WHERE Is_Active = 1");
+                            $query = mysqli_query($con, "SELECT `id`, `PlanName`, `Duration`, `Days`, `Price`, `PostingDate`, `UpdationDate` FROM `tblplan`");
                             while ($row = mysqli_fetch_array($query)) {
                                 ?>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="card-box">
                                         <div class="card card-custom p-4 bg-white">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -121,13 +128,15 @@ if (strlen($_SESSION['login']) == 0) {
                                             </div>
                                             <small class="text-muted">Weight gain and Cardio</small>
                                             <h2>₹<?php echo htmlentities($row['Price']); ?><span
-                                                    style="font-size:15px">/month</span></h2>
+                                                    style="font-size:15px">/month</span>
+                                            </h2>
                                             <hr>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
                                                     <?php echo htmlentities($row['Duration']); ?></span></div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
-                                                        style="color:green"></i> Gym Equipment
+                                                        style="color:green"></i>
+                                                    Gym Equipment
                                                     Access</span></div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
@@ -139,16 +148,20 @@ if (strlen($_SESSION['login']) == 0) {
                                                         style="color:green"></i>
                                                     Locker Room</span></div>
                                             <hr>
-                                            <div class="mb-3"><small>Available in all branches</small></div>
+                                            <!-- <div class="mb-3"><small>Available in all branches</small></div> -->
                                             <div class="d-flex justify-content-between card-footer-btns">
-                                                <a href="#" class="btn btn-primary btn-custom">View Package</a>
-                                                <a href="#" class="text-secondary editPackageBtn"
+                                                <a href="#" class="btn btn-primary btn-custom editPackageBtn"
                                                     data-id="<?php echo $row['id']; ?>"
                                                     data-name="<?php echo htmlentities($row['PlanName']); ?>"
                                                     data-duration="<?php echo htmlentities($row['Duration']); ?>"
                                                     data-days="<?php echo htmlentities($row['Days']); ?>"
                                                     data-price="<?php echo htmlentities($row['Price']); ?>" data-toggle="modal"
                                                     data-target="#addPackageModal">Edit Package</a>
+                                                <!-- <a href="#" class="text-secondary">Delete Package</a> -->
+                                                <a href="?delete_id=<?php echo $row['id']; ?>" class="text-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this package?');">
+                                                    Delete
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -160,8 +173,10 @@ if (strlen($_SESSION['login']) == 0) {
                 </div>
                 <?php include('includes/footer.php'); ?>
             </div>
-        </div>
 
+
+
+        </div> <!-- END wrapper -->
         <!-- Add/Edit Package Modal -->
         <div class="modal fade custom-modal-rounded" id="addPackageModal" tabindex="-1" role="dialog"
             aria-labelledby="addPackageModalLabel" aria-hidden="true">
@@ -212,9 +227,14 @@ if (strlen($_SESSION['login']) == 0) {
                                             required>
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <input class="form-check-input" type="checkbox" id="isActive" checked>
+                                    <label class="form-check-label" for="isActive">
+                                        Branch is active and operational
+                                    </label>
+                                </div>
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-success" name="submit">Save Package</button>
@@ -224,13 +244,28 @@ if (strlen($_SESSION['login']) == 0) {
             </div>
         </div>
 
-        <!-- JS Scripts -->
+
+        <script>
+            var resizefunc = [];
+        </script>
+
+        <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/detect.js"></script>
+        <script src="assets/js/fastclick.js"></script>
+        <script src="assets/js/jquery.blockUI.js"></script>
+        <script src="assets/js/waves.js"></script>
+        <script src="assets/js/jquery.slimscroll.js"></script>
+        <script src="assets/js/jquery.scrollTo.min.js"></script>
+        <script src="../plugins/switchery/switchery.min.js"></script>
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
         <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
 
+        <!-- jsPDF and html2canvas -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script>
             // Add Package - reset form
             $(document).on("click", ".btnAddPackage", function () {
@@ -263,6 +298,9 @@ if (strlen($_SESSION['login']) == 0) {
                 daysDropdown.appendChild(option);
             }
         </script>
+
+
+
     </body>
 
     </html>

@@ -167,7 +167,7 @@ File: Components
   background-color: #d80032;
   border-color: #d80032;
   float: right;
-  border-radius: 13px;
+  border-radius: 6px;
 }
 
 .btn-custom:hover,
@@ -221,23 +221,23 @@ File: Components
 }
 
 .btn-success {
-  background-color: #0077B6 !important;
+  background: linear-gradient(10deg, #023E8A, #0096C7) !important;
   border: 1px solid #0077B6 !important;
   float: right;
-  border-radius: 13px;
+  border-radius: 6px;
 }
 
 .btn-reset {
   background-color: black !important;
   border: 1px solid black !important;
-  border-radius: 13px;
+  border-radius: 6px;
 }
 
 .btn-filter {
   background-color: #d80032 !important;
   border: 1px solid #d80032 !important;
   color: white;
-  border-radius: 13px;
+  border-radius: 6px;
 }
 
 .btn-success:hover,

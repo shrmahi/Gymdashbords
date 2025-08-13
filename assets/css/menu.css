@@ -297,6 +297,11 @@ body.fixed-left .side-menu.left {
 #sidebar-menu>ul>li>a.active {
   color: #ffffff !important;
   background-color: #dd0426;
+  /* padding: 16px 24px; */
+  border-radius: 8px;
+  margin: 4px 8px;
+  box-shadow: 0 2px 8px rgba(221, 4, 38, 0.3);
+  transition: all 0.3s ease;
 }
 
 .menu-title {

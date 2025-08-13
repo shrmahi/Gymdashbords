@@ -31,19 +31,20 @@ if (strlen($_SESSION['login']) == 0) {
     }
 
     ?>
+
     <!DOCTYPE html>
     <html lang="en">
 
     <head>
         <title>Gym Dashboard | Manage Branch</title>
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="assets/css/core.css" rel="stylesheet" />
-        <link href="assets/css/components.css" rel="stylesheet" />
-        <link href="assets/css/icons.css" rel="stylesheet" />
-        <link href="assets/css/pages.css" rel="stylesheet" />
-        <link href="assets/css/menu.css" rel="stylesheet" />
-        <link href="assets/css/responsive.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
         <script src="assets/js/modernizr.min.js"></script>
     </head>
 
@@ -51,7 +52,6 @@ if (strlen($_SESSION['login']) == 0) {
         <div id="wrapper">
             <?php include('includes/topheader.php'); ?>
             <?php include('includes/leftsidebar.php'); ?>
-
             <div class="content-page">
                 <div class="content">
                     <div class="container">
@@ -83,7 +83,6 @@ if (strlen($_SESSION['login']) == 0) {
                                             <strong>Well done!</strong> <?php echo htmlentities($msg); ?>
                                         </div>
                                     <?php } ?>
-
                                     <?php if (!empty($error)) { ?>
                                         <div class="alert alert-danger alert-dismissible fade in" role="alert">
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -158,8 +157,9 @@ if (strlen($_SESSION['login']) == 0) {
 
                 <?php include('includes/footer.php'); ?>
             </div>
-        </div>
 
+
+        </div> <!-- END wrapper -->
         <!-- Add Branch Modal -->
         <div class="modal fade custom-modal-rounded" id="addBranchModal" tabindex="-1" role="dialog"
             aria-labelledby="addBranchModalLabel" aria-hidden="true">
@@ -217,18 +217,14 @@ if (strlen($_SESSION['login']) == 0) {
                                             required>
                                     </div>
                                 </div>
-
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="isActive" checked>
                                     <label class="form-check-label" for="isActive">
                                         Branch is active and operational
                                     </label>
                                 </div>
-
-
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-success" name="submit">Save Branch</button>
@@ -238,22 +234,27 @@ if (strlen($_SESSION['login']) == 0) {
             </div>
         </div>
 
-        <!-- JS Scripts -->
         <script>
-            function changeLimit(value) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('limit', value);
-                url.searchParams.set('page', 1); // reset to page 1
-                window.location.href = url.toString();
-            }
+            var resizefunc = [];
         </script>
 
+        <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/detect.js"></script>
+        <script src="assets/js/fastclick.js"></script>
+        <script src="assets/js/jquery.blockUI.js"></script>
+        <script src="assets/js/waves.js"></script>
+        <script src="assets/js/jquery.slimscroll.js"></script>
+        <script src="assets/js/jquery.scrollTo.min.js"></script>
+        <script src="../plugins/switchery/switchery.min.js"></script>
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
-        <script src="assets/js/tooltip.js"></script>
         <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
+
+        <!-- jsPDF and html2canvas -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script>
             // Reset Modal for Adding
             $(document).on("click", ".btnAddBranch", function () {
@@ -279,8 +280,9 @@ if (strlen($_SESSION['login']) == 0) {
                 $("button[name=submit]").text("Update Branch");
             });
         </script>
-    </body>
 
+
+    </body>
 
     </html>
 <?php } ?>
