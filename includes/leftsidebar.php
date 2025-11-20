@@ -14,30 +14,29 @@
                 <!-- Admin only -->
                 <?php if ($_SESSION['utype'] == '1'): ?>
                     <li class="has_sub">
-                        <a href="manage-branches.php" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                        <a href="manage-branches.php" class="waves-effect"><i class="fa-solid fa-code-branch"></i>
                             <span>Branches</span></a>
                     </li>
-                    <li class="has_sub">
-                        <a href="manage-memberlist.php" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
+                    <!-- <li class="has_sub">
+                        <a href="manage-memberlist.php" class="waves-effect"><i class="fa fa-users"></i>
                             <span>Members</span></a>
-                    </li>
+                    </li> -->
                     <li class="has_sub">
-                        <a href="manage-enquiry.php" class="waves-effect"><i class="mdi mdi-account-multiple-plus"></i>
+                        <a href="manage-enquiry.php" class="waves-effect"><i class="fa fa-user"></i>
                             <span>Leads & CRM</span> </a>
                     </li>
                     <li class="has_sub">
-                        <a href="manage-package.php" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                        <a href="manage-package.php" class="waves-effect"><i class="fa-solid fa-box-open"></i>
                             <span>Plan/ Package</span></a>
                     </li>
-                    <li class="has_sub">
-                        <a href="manage-payments.php" class="waves-effect"><i class="mdi mdi-credit-card"></i>
+                    <!-- <li class="has_sub">
+                        <a href="manage-payments.php" class="waves-effect"><i class="fa-solid fa-credit-card"></i>
                             <span>Payments</span></a>
-                    </li>
+                    </li> -->
                     <li class="has_sub">
-                        <a href="manage-analytics.php" class="waves-effect"><i class="mdi mdi-format-list-bulleted"></i>
+                        <a href="manage-analytics.php" class="waves-effect"><i class="fa-solid fa-chart-column"></i>
                             <span>Analytics</span></a>
                     </li>
-
                 <?php endif; ?>
                 <!-- Subadmin only -->
                 <?php if ($_SESSION['utype'] == '2'): ?>
@@ -48,18 +47,16 @@
                 <?php endif; ?>
 
                 <li class="has_sub">
-                    <a href="manage-settings.php" class="waves-effect"><i class="mdi mdi-wrench"></i>
+                    <a href="manage-settings.php" class="waves-effect"><i class="fa fa-cog"></i>
                         <span>Settings</span></a>
                 </li>
-
-
             </ul>
             <hr class="hr-bottom" style="margin-top:40%;" />
             <ul>
-                <li><a href="logout.php" class="waves-effect"><i class="mdi mdi-account"></i>
+                <li><a href="logout.php" class="waves-effect"><i class="fa fa-user"></i>
                         <span><?php echo htmlentities($_SESSION['username']); ?></span></a></li>
                 <li>
-                    <a href="logout.php" class="waves-effect"><i class="mdi mdi-power"></i>
+                    <a href="logout.php" class="waves-effect"><i class="fa-solid fa-power-off"></i>
                         <span>Logout</span></a>
                 </li>
             </ul>

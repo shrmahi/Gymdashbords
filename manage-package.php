@@ -182,6 +182,7 @@ if (strlen($_SESSION['login']) == 0) {
             aria-labelledby="addPackageModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <form method="POST">
+
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addPackageModalLabel"><span class="icon-bg"><i

@@ -102,7 +102,7 @@ if ($row = mysqli_fetch_assoc($query)) {
                                         <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-black">
                                             Total Members</p>
                                         <?php
-                                        $query = mysqli_query($con, "select * from tblmember");
+                                        $query = mysqli_query($con, "select * from member_details");
                                         $countsubcat = mysqli_num_rows($query);
                                         ?>
                                         <h2 class="text-black"><?php echo htmlentities($countsubcat); ?></h2>
@@ -118,7 +118,7 @@ if ($row = mysqli_fetch_assoc($query)) {
                                         <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-black">
                                             Active Members</p>
                                         <?php
-                                        $query = mysqli_query($con, "select * from tblmember where Is_Active=1");
+                                        $query = mysqli_query($con, "select * from member_details where Is_Active=1");
                                         $countsubcat = mysqli_num_rows($query);
                                         ?>
                                         <h2 class="text-black"><?php echo htmlentities($countsubcat); ?></h2>
@@ -139,7 +139,7 @@ if ($row = mysqli_fetch_assoc($query)) {
                                             Recent Birthday</p>
                                         <p></p>
                                         <?php
-                                        $query = mysqli_query($con, "select * from tblmember where Is_Active=1 AND DATE_FORMAT(dob, '%m-%d') = DATE_FORMAT(CURDATE(), '%m-%d')");
+                                        $query = mysqli_query($con, "select * from member_details where Is_Active=1 AND DATE_FORMAT(dob, '%m-%d') = DATE_FORMAT(CURDATE(), '%m-%d')");
                                         $countsubcat = mysqli_num_rows($query);
                                         ?>
                                         <h2 class="text-black"><?php echo htmlentities($countsubcat); ?></h2>
@@ -172,6 +172,9 @@ if ($row = mysqli_fetch_assoc($query)) {
         </div>
 
     </div>
+    <script>
+        var resizefunc = [];
+    </script>
 
     <!-- JS Scripts -->
     <script src="assets/js/jquery.min.js"></script>
@@ -190,6 +193,7 @@ if ($row = mysqli_fetch_assoc($query)) {
     <script src="assets/pages/jquery.dashboard.js"></script>
     <script src="assets/js/jquery.core.js"></script>
     <script src="assets/js/jquery.app.js"></script>
+    <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
 
     <!-- Logout on browser back button -->
     <script>

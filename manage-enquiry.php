@@ -232,6 +232,8 @@ if (strlen($_SESSION['login']) == 0) {
         <!-- jsPDF and html2canvas -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
+
 
         <script>
             document.getElementById('printPDF').addEventListener('click', function (e) {

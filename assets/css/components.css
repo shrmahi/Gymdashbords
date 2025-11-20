@@ -221,8 +221,8 @@ File: Components
 }
 
 .btn-success {
-  background: linear-gradient(10deg, #023E8A, #0096C7) !important;
-  border: 1px solid #0077B6 !important;
+  background-color: #023E8A !important;
+  border: 1px solid #023E8A !important;
   float: right;
   border-radius: 6px;
 }
@@ -239,6 +239,36 @@ File: Components
   color: white;
   border-radius: 6px;
 }
+
+.btn-active {
+  background-color: #007200 !important;
+  border: 1px solid #007200 !important;
+  border-radius: 6px;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #f7b801 !important;
+  border: 1px solid #f7b801 !important;
+  border-radius: 6px;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #d00000 !important;
+  border: 1px solid #d00000 !important;
+  border-radius: 6px;
+  color: white;
+}
+
+.btn-deactive {
+  background-color: #3c096c !important;
+  border: 1px solid #3c096c !important;
+  border-radius: 6px;
+  color: white;
+
+}
+
 
 .btn-success:hover,
 .btn-success:focus,
@@ -2557,7 +2587,7 @@ textarea.form-control {
 }
 
 .input-group-addon {
-  border-radius: 2px;
+  border-radius: 25px;
   border: 1px solid #eeeeee;
 }
 

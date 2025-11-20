@@ -5,6 +5,13 @@ error_reporting(0);
 if (strlen($_SESSION['login']) == 0) {
     header('location:index.php');
 } else {
+    // DELETE PACKAGE
+    if (isset($_GET['delete_id'])) {
+        $delete_id = intval($_GET['delete_id']);
+        $query = mysqli_query($con, "DELETE FROM tblbranch WHERE id='$delete_id'");
+        $msg = $query ? "Branch deleted successfully." : "Delete failed. Try again.";
+    }
+
     if (isset($_POST['submit'])) {
         $branch_id = isset($_POST['branch_id']) ? intval($_POST['branch_id']) : 0;
         $branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
@@ -96,7 +103,7 @@ if (strlen($_SESSION['login']) == 0) {
 
                             <!-- Add Branch Button -->
                             <div class="col-sm-12 mb-3">
-                                <button class="btn btn-success waves-effect waves-light" data-toggle="modal"
+                                <button class="btn btn-success waves-effect waves-light btnAddBranch" data-toggle="modal"
                                     data-target="#addBranchModal">
                                     <i class="mdi mdi-plus-circle-outline"></i> Add Branch
                                 </button>
@@ -135,8 +142,8 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <small><?php echo htmlentities($row['BranchEmail']); ?></small>
                                             </div>
                                             <div class="d-flex justify-content-between card-footer-btns">
-                                                <a href="#" class="btn btn-primary btn-branch">View Details</a>
-                                                <a href="#" class="text-secondary editBranchBtn"
+                                                
+                                                <a href="#" class="btn btn-primary btn-custom editBranchBtn"
                                                     data-id="<?php echo $row['id']; ?>"
                                                     data-name="<?php echo htmlentities($row['BranchName']); ?>"
                                                     data-manager="<?php echo htmlentities($row['BranchManager']); ?>"
@@ -144,6 +151,11 @@ if (strlen($_SESSION['login']) == 0) {
                                                     data-email="<?php echo htmlentities($row['BranchEmail']); ?>"
                                                     data-number="<?php echo htmlentities($row['BranchNumber']); ?>"
                                                     data-toggle="modal" data-target="#addBranchModal">Edit Branch</a>
+                                                    <a href="?delete_id=<?php echo $row['id']; ?>" class="text-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this branch?');">
+                                                    Delete
+                                                </a>
+
                                             </div>
                                         </div>
                                     </div>
