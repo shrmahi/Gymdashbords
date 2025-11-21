@@ -81,24 +81,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <!-- Alerts -->
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="alert-container">
-                                    <?php if (!empty($msg)) { ?>
-                                        <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Well done!</strong> <?php echo htmlentities($msg); ?>
-                                        </div>
-                                    <?php } ?>
-                                    <?php if (!empty($error)) { ?>
-                                        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Oh snap!</strong> <?php echo htmlentities($error); ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
+                                <?php include('alert_message.php'); ?>
                             </div>
 
                             <!-- Add Branch Button -->
@@ -151,10 +134,10 @@ if (strlen($_SESSION['login']) == 0) {
                                                     data-email="<?php echo htmlentities($row['BranchEmail']); ?>"
                                                     data-number="<?php echo htmlentities($row['BranchNumber']); ?>"
                                                     data-toggle="modal" data-target="#addBranchModal">Edit Branch</a>
-                                                    <a href="?delete_id=<?php echo $row['id']; ?>" class="text-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this branch?');">
-                                                    Delete
-                                                </a>
+                                                <a href="#" class="text-danger"
+                                                    onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'branch')">
+                                                        Delete
+                                                    </a>
 
                                             </div>
                                         </div>
@@ -245,9 +228,20 @@ if (strlen($_SESSION['login']) == 0) {
                 </form>
             </div>
         </div>
+        <!-- Delete Confirmation Modal -->
+        <?php include('modal-alert.php'); ?>
 
         <script>
             var resizefunc = [];
+        </script>
+        <!-- Delete Modal Script -->
+        <script src="assets/js/modal-alert.js"></script>
+
+            <script>
+            // Auto hide alert after 5 seconds (5000ms)
+            setTimeout(function () {
+                $('.alert').fadeOut('slow');
+            }, 5000);
         </script>
 
         <!-- jQuery and App Scripts -->

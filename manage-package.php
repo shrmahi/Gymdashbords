@@ -80,25 +80,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <!-- Alerts -->
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="alert-container">
-                                    <?php if (!empty($msg)) { ?>
-                                        <div class="alert alert-success alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Well done!</strong> <?php echo htmlentities($msg); ?>
-                                        </div>
-                                    <?php } ?>
-
-                                    <?php if (!empty($error)) { ?>
-                                        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            <strong>Oh snap!</strong> <?php echo htmlentities($error); ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
+                                <?php include('alert_message.php'); ?>
                             </div>
 
                             <!-- Add Package Button -->
@@ -158,10 +140,10 @@ if (strlen($_SESSION['login']) == 0) {
                                                     data-price="<?php echo htmlentities($row['Price']); ?>" data-toggle="modal"
                                                     data-target="#addPackageModal">Edit Package</a>
                                                 <!-- <a href="#" class="text-secondary">Delete Package</a> -->
-                                                <a href="?delete_id=<?php echo $row['id']; ?>" class="text-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this package?');">
-                                                    Delete
-                                                </a>
+                                                <a href="#" class="text-danger"
+                                                        onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'package')">
+                                                            Delete
+                                                        </a>
                                             </div>
                                         </div>
                                     </div>
@@ -244,12 +226,16 @@ if (strlen($_SESSION['login']) == 0) {
                 </form>
             </div>
         </div>
+        <!-- Delete Confirmation Modal -->
+        <?php include('modal-alert.php'); ?>
 
 
         <script>
             var resizefunc = [];
         </script>
 
+        <!-- Delete Modal Script -->
+        <script src="assets/js/modal-alert.js"></script>
         <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
@@ -298,6 +284,12 @@ if (strlen($_SESSION['login']) == 0) {
                 option.textContent = i + (i === 1 ? " Day" : " Days");
                 daysDropdown.appendChild(option);
             }
+        </script>
+        <script>
+            // Auto hide alert after 5 seconds (5000ms)
+            setTimeout(function () {
+                $('.alert').fadeOut('slow');
+            }, 5000);
         </script>
 
 

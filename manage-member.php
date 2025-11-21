@@ -11,130 +11,181 @@ if (strlen($_SESSION['login']) == 0) {
     // ========== INSERT / UPDATE MEMBER ==========
     if (isset($_POST['submit'])) {
 
-        // Escape all inputs
-        foreach ($_POST as $key => $value) {
-            $_POST[$key] = mysqli_real_escape_string($con, $value);
-        }
-
-        $member_id       = $_POST['member_id'];
-        $first_name      = $_POST['first_name'];
-        $last_name       = $_POST['last_name'];
-        $phone           = $_POST['phone'];
-        $email           = $_POST['email'];
-        $dob             = $_POST['dob'];
-        $medical         = $_POST['medical_History'];
-        $branch          = $_POST['branch_manager'];
-        $membership_type = $_POST['membership_type'];
-        $status          = $_POST['membership_status'];
-        $trainer         = $_POST['assigned_trainer'];
-
-        $contact_name  = $_POST['contact_name'];
-        $relationship  = $_POST['relationship'];
-        $contact_phone = $_POST['phone_Number'];
-
-        $current_weight = $_POST['current_weight'];
-        $goal_weight    = $_POST['goal_weight'];
-        $body_fat       = $_POST['body_fat'];
-        $muscle_mass    = $_POST['muscle_mass'];
-        $chest          = $_POST['chest'];
-        $waist          = $_POST['waist'];
-        $hips           = $_POST['hips'];
-        $arms           = $_POST['arms'];
-        $thighs         = $_POST['thighs'];
-        $Is_Active      = 1;
-
-        // =================== UPDATE MEMBER ===================
-        if (!empty($member_id)) {
-
-            $sql = "UPDATE measurements SET 
-                first_name='$first_name',
-                last_name='$last_name',
-                phone='$phone',
-                email='$email',
-                dob='$dob',
-                medical_history='$medical',
-                branch_manager='$branch',
-                membership_type='$membership_type',
-                membership_status='$status',
-                assigned_trainer='$trainer',
-                emg_contact_name='$contact_name',
-                emg_relationship='$relationship',
-                emg_phone='$contact_phone',
-                current_weight='$current_weight',
-                goal_weight='$goal_weight',
-                body_fat='$body_fat',
-                muscle_mass='$muscle_mass',
-                chest='$chest',
-                waist='$waist',
-                hips='$hips',
-                arms='$arms',
-                thighs='$thighs'
-                WHERE id='$member_id'";
-
-            $query = mysqli_query($con, $sql);
-            $msg = $query ? "Member updated successfully." : "Update failed. Try again.";
-
-        } else {
-
-            // =================== INSERT MEMBER ===================
-            $sql = "INSERT INTO measurements(
-                first_name, last_name, phone, email, dob, medical_history,
-                branch_manager, membership_type, membership_status, assigned_trainer,
-                emg_contact_name, emg_relationship, emg_phone,
-                current_weight, goal_weight, body_fat, muscle_mass,
-                chest, waist, hips, arms, thighs, Is_Active
-            ) VALUES (
-                '$first_name','$last_name','$phone','$email','$dob','$medical',
-                '$branch','$membership_type','$status','$trainer',
-                '$contact_name','$relationship','$contact_phone',
-                '$current_weight','$goal_weight','$body_fat','$muscle_mass',
-                '$chest','$waist','$hips','$arms','$thighs','$Is_Active'
-            )";
-
-            $query = mysqli_query($con, $sql);
-            $msg = $query ? "Member added successfully." : "Insert failed. Try again.";
-        }
+    // Escape all inputs
+    foreach ($_POST as $key => $value) {
+        $_POST[$key] = mysqli_real_escape_string($con, $value);
     }
 
+    // MEMBER FIELDS
+    $MemberBid = $_POST['member_id']; // Hidden input for update
+    $FirstName = $_POST['FirstName'];
+    $LastName = $_POST['LastName'];
+    $Gender = $_POST['Gender'];
+    $Email = $_POST['Email'];
+    $Mobile = $_POST['Mobile'];
+    $AlterNumber = $_POST['AlterNumber'];
+    $DoctorName = $_POST['DoctorName'];
+    $DoctorNumber = $_POST['DoctorNumber'];
+    $MedicalHistory = $_POST['MedicalHistory'];
+    $Address = $_POST['Address'];
+    $PermnentAddress = $_POST['PermnentAddress'];
+    $DrivingNumber = $_POST['DrivingNumber'];
+    $PanNumber = $_POST['PanNumber'];
+    $AadharNumber = $_POST['AadharNumber'];
+    $Dob = $_POST['Dob'];
+    $JoinDate = $_POST['JoinDate'];
+    $ExpiryDate = $_POST['ExpiryDate'];
+    $MaritalStatus = $_POST['MaritalStatus'];
+    $AssignStaff = $_POST['AssignStaff'];
+    $ShiftType = $_POST['ShiftType'];
+    $PakageType = $_POST['PakageType'];
+    $PaymentMode = $_POST['PaymentMode'];
+    $ReceiptType = $_POST['ReceiptType'];
+    $ReceiptDate = $_POST['ReceiptDate'];
+    $PostingDate = $_POST['PostingDate'];
+    $Is_Active = $_POST['Is_Active'];
+    $PostImage = $_POST['PostImage'];
+    $postedBy = $_SESSION['login'];
+    $lastUpdatedBy = $_SESSION['login'];
+
+    // MEASUREMENT FIELDS
+    $branch_manager = $_POST['branch_manager'];
+    $membership_type = $_POST['membership_type'];
+    $membership_status = $_POST['membership_status'];
+    $assigned_trainer = $_POST['assigned_trainer'];
+    $emg_contact_name = $_POST['emg_contact_name'];
+    $emg_relationship = $_POST['emg_relationship'];
+    $emg_phone = $_POST['emg_phone'];
+    $current_weight = $_POST['current_weight'];
+    $goal_weight = $_POST['goal_weight'];
+    $body_fat = $_POST['body_fat'];
+    $muscle_mass = $_POST['muscle_mass'];
+    $chest = $_POST['chest'];
+    $waist = $_POST['waist'];
+    $hips = $_POST['hips'];
+    $arms = $_POST['arms'];
+    $thighs = $_POST['thighs'];
+
+    mysqli_begin_transaction($con);
+
+    try {
+
+        if (!empty($MemberBid)) {
+            // ================== UPDATE MEMBER ==================
+            $sql1 = "UPDATE member_details SET 
+                FirstName='$FirstName', LastName='$LastName', Gender='$Gender', Email='$Email',
+                Mobile='$Mobile', AlterNumber='$AlterNumber', DoctorName='$DoctorName',
+                DoctorNumber='$DoctorNumber', MedicalHistory='$MedicalHistory', Address='$Address',
+                PermnentAddress='$PermnentAddress', DrivingNumber='$DrivingNumber', PanNumber='$PanNumber',
+                AadharNumber='$AadharNumber', Dob='$Dob', JoinDate='$JoinDate', ExpiryDate='$ExpiryDate',
+                MaritalStatus='$MaritalStatus', AssignStaff='$AssignStaff', ShiftType='$ShiftType',
+                PakageType='$PakageType', PaymentMode='$PaymentMode', ReceiptType='$ReceiptType',
+                ReceiptDate='$ReceiptDate', PostingDate='$PostingDate', UpdationDate=NOW(),
+                Is_Active='$Is_Active', PostImage='$PostImage', postedBy='$postedBy',
+                lastUpdatedBy='$lastUpdatedBy'
+                WHERE id='$MemberBid'";
+            mysqli_query($con, $sql1);
+
+            // ================== UPDATE MEASUREMENTS ==================
+            $sql2 = "UPDATE measurements SET 
+                branch_manager='$branch_manager', membership_type='$membership_type',
+                membership_status='$membership_status', assigned_trainer='$assigned_trainer',
+                emg_contact_name='$emg_contact_name', emg_relationship='$emg_relationship',
+                emg_phone='$emg_phone', current_weight='$current_weight', goal_weight='$goal_weight',
+                body_fat='$body_fat', muscle_mass='$muscle_mass', chest='$chest', waist='$waist',
+                hips='$hips', arms='$arms', thighs='$thighs'
+                WHERE member_id='$MemberBid'";
+
+            mysqli_query($con, $sql2);
+
+            $msg = "Member updated successfully.";
+
+        } else {
+            // ================== INSERT MEMBER ==================
+            $sql1 = "INSERT INTO member_details (
+                FirstName, LastName, Gender, Email, Mobile, AlterNumber, DoctorName, DoctorNumber,
+                MedicalHistory, Address, PermnentAddress, DrivingNumber, PanNumber, AadharNumber,
+                Dob, JoinDate, ExpiryDate, MaritalStatus, AssignStaff, ShiftType, PakageType,
+                PaymentMode, ReceiptType, ReceiptDate, PostingDate, UpdationDate, Is_Active,
+                PostImage, postedBy, lastUpdatedBy
+            ) VALUES (
+                '$FirstName', '$LastName', '$Gender', '$Email', '$Mobile', '$AlterNumber',
+                '$DoctorName', '$DoctorNumber', '$MedicalHistory', '$Address', '$PermnentAddress',
+                '$DrivingNumber', '$PanNumber', '$AadharNumber', '$Dob', '$JoinDate', '$ExpiryDate',
+                '$MaritalStatus', '$AssignStaff', '$ShiftType', '$PakageType', '$PaymentMode',
+                '$ReceiptType', '$ReceiptDate', '$PostingDate', NOW(), '$Is_Active',
+                '$PostImage', '$postedBy', '$lastUpdatedBy'
+            )";
+            mysqli_query($con, $sql1);
+            $MemberBid = mysqli_insert_id($con); // Set for second insert
+
+            // ================== INSERT MEASUREMENTS ==================
+            $sql2 = "INSERT INTO measurements (
+                member_id, branch_manager, membership_type, membership_status, assigned_trainer,
+                emg_contact_name, emg_relationship, emg_phone, current_weight, goal_weight,
+                body_fat, muscle_mass, chest, waist, hips, arms, thighs, Is_Active
+            ) VALUES (
+                '$MemberBid', '$branch_manager', '$membership_type', '$membership_status',
+                '$assigned_trainer', '$emg_contact_name', '$emg_relationship', '$emg_phone',
+                '$current_weight', '$goal_weight', '$body_fat', '$muscle_mass', '$chest',
+                '$waist', '$hips', '$arms', '$thighs', '1'
+            )";
+            mysqli_query($con, $sql2);
+
+            $msg = "Member added successfully.";
+        }
+
+        mysqli_commit($con);
+    } catch (Exception $e) {
+        mysqli_rollback($con);
+        $msg = "Transaction failed: " . $e->getMessage();
+    }
+}
     // ========== DELETE / DEACTIVATE / RESTORE ==========
     if (isset($_GET['action']) && $_GET['action'] == 'del' && $_GET['rid']) {
         $id = intval($_GET['rid']);
-        mysqli_query($con, "UPDATE measurements SET Is_Active = 0 WHERE id = '$id'");
+        mysqli_query($con, "UPDATE member_details SET Is_Active = 0 WHERE id = '$id'");
         $msg = "Member deactivated";
     }
 
     if (isset($_GET['appid'])) {
         $id = intval($_GET['appid']);
-        mysqli_query($con, "UPDATE measurements SET Is_Active = 1 WHERE id = '$id'");
+        mysqli_query($con, "UPDATE member_details SET Is_Active = 1 WHERE id = '$id'");
         $msg = "Member activated";
     }
 
     if (isset($_GET['disid'])) {
         $id = intval($_GET['disid']);
-        mysqli_query($con, "UPDATE measurements SET Is_Active = 0 WHERE id = '$id'");
+        mysqli_query($con, "UPDATE member_details SET Is_Active = 0 WHERE id = '$id'");
         $msg = "Member deactivated";
     }
 
     if (isset($_GET['resid'])) {
         $id = intval($_GET['resid']);
-        mysqli_query($con, "UPDATE measurements SET Is_Active = 1 WHERE id = '$id'");
+        mysqli_query($con, "UPDATE member_details SET Is_Active = 1 WHERE id = '$id'");
         $msg = "Member restored successfully";
     }
 
-    if (isset($_GET['action']) && $_GET['action'] == 'parmdel' && $_GET['rid']) {
-        $id = intval($_GET['rid']);
-        mysqli_query($con, "DELETE FROM measurements WHERE id = '$id'");
-        $delmsg = "Member deleted permanently";
+    // if (isset($_GET['action']) && $_GET['action'] == 'parmdel' && $_GET['rid']) {
+    //     $id = intval($_GET['rid']);
+    //     mysqli_query($con, "DELETE FROM member_details WHERE id = '$id'");
+    //     $delmsg = "Member deleted permanently";
+    // }
+    if (isset($_GET['action']) && $_GET['action'] == 'parmdel' && isset($_GET['rid'])) {
+    $id = intval($_GET['rid']);
+    mysqli_query($con, "UPDATE member_details SET is_delete = 1 WHERE id = '$id'");
+    $delmsg = "Member deleted permanently";
     }
 
     // ========== SEARCH & FILTER ==========
-    $whereClause = "WHERE 1=1";
+    // $whereClause = "WHERE 1=1";
+    $whereClause .= (!empty($whereClause) ? " AND " : " WHERE ") . "is_delete = 0";
 
     if (!empty($_GET['search'])) {
         $searchTerm = mysqli_real_escape_string($con, $_GET['search']);
-        $whereClause .= " AND (first_name LIKE '%$searchTerm%' 
-                            OR last_name LIKE '%$searchTerm%' 
-                            OR email LIKE '%$searchTerm%')";
+        $whereClause .= " AND (FirstName LIKE '%$searchTerm%' 
+                            OR LastName LIKE '%$searchTerm%' 
+                            OR Email LIKE '%$searchTerm%')";
     }
 
     if (!empty($_GET['status']) && $_GET['status'] != 'all') {
@@ -147,18 +198,22 @@ if (strlen($_SESSION['login']) == 0) {
     $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
     $offset = ($page - 1) * $limit;
 
-    $totalQuery = mysqli_query($con, "SELECT COUNT(*) AS total FROM measurements $whereClause");
+    $totalQuery = mysqli_query($con, "SELECT COUNT(*) AS total FROM member_details $whereClause");
     $totalRecords = mysqli_fetch_assoc($totalQuery)['total'];
     $totalPages = ceil($totalRecords / $limit);
 
     // ========== FETCH MEMBERS ==========
-    $query = mysqli_query($con, 
-        "SELECT id, first_name, last_name, email, phone,current_weight, membership_type, membership_status, Is_Active 
-        FROM measurements 
-        $whereClause 
-        ORDER BY id DESC 
-        LIMIT $limit OFFSET $offset"
-    );
+    
+    $query = mysqli_query($con,
+    "SELECT 
+        m.id, m.FirstName, m.LastName, m.Email, m.Mobile, m.PakageType, m.PaymentMode, m.Is_Active,
+        ms.branch_manager, ms.membership_type, ms.membership_status, ms.assigned_trainer
+    FROM member_details m
+    LEFT JOIN measurements ms ON m.id = ms.member_id
+    $whereClause
+    ORDER BY m.id DESC
+    LIMIT $limit OFFSET $offset"
+);
 
 ?>
 
@@ -176,6 +231,7 @@ if (strlen($_SESSION['login']) == 0) {
         <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
         <script src="assets/js/modernizr.min.js"></script>
+        
     </head>
 
     <body class="fixed-left">
@@ -245,29 +301,27 @@ if (strlen($_SESSION['login']) == 0) {
                                            
                                             <div class="member-info">
                                                 <div class="member-avatar">
-                                                    <?php echo strtoupper(substr($row['first_name'], 0, 1)); ?>
+                                                    <?php echo strtoupper(substr($row['FirstName'], 0, 1)); ?>
                                                 </div>
                                                 
                                                 <div>
                                                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                                        <h5 class="member-name"><?php echo htmlentities($row['first_name'] . ' ' . $row['last_name']); ?></h5> &nbsp;&nbsp;
+                                                        <h5 class="member-name"><?php echo htmlentities($row['FirstName'] . ' ' . $row['LastName']); ?></h5> &nbsp;&nbsp;
                                                         <span class="status-badge <?php echo $row['Is_Active'] ? 'status-active' : 'status-inactive'; ?>">
                                                             <?php echo $row['Is_Active'] ? 'Active' : 'Inactive'; ?>
                                                         </span>
                                                     </div>
                                                     <div style="display:flex;justify-content:space-between;" >
                                                         <div class="member-email" >
-                                                         <i class="fa fa-envelope"></i> <?php echo htmlentities($row['email']); ?>
+                                                         <i class="fa fa-envelope"></i> <?php echo htmlentities($row['Email']); ?>
                                                         </div> &nbsp;&nbsp;
                                                     &nbsp;<div class="member-phone">
-                                                        <i class="fa fa-phone"></i> <?php echo htmlentities($row['phone']); ?>
+                                                        <i class="fa fa-Mobile"></i> <?php echo htmlentities($row['Mobile']); ?>
                                                     </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
-                                            
-                                            
+
                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                                                 <div class="stats-container">
                                                     <div class="stat-item">
@@ -304,12 +358,12 @@ if (strlen($_SESSION['login']) == 0) {
                                                 </div>
                                                 
                                                 <div class="text-right">
-                                                    <a href="manage-analytics.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-edit">
+                                                    <a href="manage-member.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-edit">
                                                         <i class="fa fa-edit"></i> Edit
                                                     </a>
                                                     <?php if ($row['Is_Active']) { ?>
-                                                        <a href="?disid=<?php echo $row['id']; ?>" class="btn btn-sm btn-deactive"
-                                                            onclick="return confirm('Are you sure you want to deactivate this member?')">
+                                                        <a href="#" class="btn btn-sm btn-deactive"
+                                                            onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'deactivate')">
                                                             <i class="fa fa-ban"></i> Deactivate
                                                         </a>
                                                     <?php } else { ?>
@@ -318,13 +372,11 @@ if (strlen($_SESSION['login']) == 0) {
                                                         </a>
                                                     <?php } ?>
                                                     <a href="#" class="btn btn-sm btn-delete"
-                                                    onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>')">
+                                                    onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'member')">
                                                         <i class="fa fa-trash"></i> Remove
                                                     </a>
                                                 </div>
                                             </div>
-                                            
-                                            
                                         </div>
                                     <?php } ?>
                                     
@@ -370,7 +422,9 @@ if (strlen($_SESSION['login']) == 0) {
             aria-labelledby="addMemberModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <form method="POST">
-                    <input type="hidden" name="member_id" id="member_id">
+                    <!-- <input type="hidden" name="MemberBid" id="MemberBid"> -->
+                    <input type="hidden" name="member_id" value="<?php echo $MemberBid; ?>">
+
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addMemberModalLabel"><span class="icon-bg"><i
@@ -383,15 +437,15 @@ if (strlen($_SESSION['login']) == 0) {
                         <div class="modal-body">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#personal" data-toggle="tab">Personal</a></li>
-                            <li><a href="#membership" data-toggle="tab">Membership</a></li>
                             <li><a href="#documents" data-toggle="tab">Documents</a></li>
+                            <li><a href="#membership" data-toggle="tab">Membership</a></li>
                             <li><a href="#progress" data-toggle="tab">Progress</a></li>
                         </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade in active" id="personal">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input type="file" class="form-control" name="postimage" id="postimage"
+                                            <input type="file" class="form-control" name="PostImage" id="postimage"
                                                 accept="image/*" required onchange="previewImage(event)">
                                         </div>
                                         <div class="col-md-6">
@@ -401,30 +455,30 @@ if (strlen($_SESSION['login']) == 0) {
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="firstName">First Name*</label>
-                                        <input type="text" class="form-control" name="first_name" id="firstName" required>
+                                        <input type="text" class="form-control" name="FirstName" id="firstName" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lastName">Last Name*</label>
-                                        <input type="text" class="form-control" name="last_name" id="lastName" required>
+                                        <input type="text" class="form-control" name="LastName" id="lastName" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lastName">Gender*</label>
                                         
-                                            <label class="radio-inline"><input type="radio" name="gender" value="Male"
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Male"
                                                     required> Male</label>
-                                            <label class="radio-inline"><input type="radio" name="gender" value="Female">
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Female">
                                                 Female</label>
-                                            <label class="radio-inline"><input type="radio" name="gender" value="Other">
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Other">
                                                 Other</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <select class="form-control" name="maritalstatus" id="maritalstatus" required>
+                                        <select class="form-control" name="MaritalStatus" id="maritalstatus" required>
                                                 <option value="">-- Marital Status --</option>
                                                 <option value="Married">Married</option>
                                                 <option value="Unmarried">Unmarried</option>
@@ -434,35 +488,43 @@ if (strlen($_SESSION['login']) == 0) {
                                 </div>
                                 <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="branchNumber"><i class="fa-solid fa-phone-volume"></i> Phone
+                                                <label for="branchNumber"><i class="fa-solid fa-Mobile-volume"></i> Mobile
                                                     Number</label>
-                                                <input type="text" class="form-control" id="branchNumber" name="branch_number" required>
+                                                <input type="text" class="form-control" id="Mobile" name="Mobile" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="branchEmail"><i class="fa-regular fa-envelope"></i> Email Address</label>
-                                                <input type="text" class="form-control" id="branchEmail" name="branch_email" required>
+                                                <label for="branchNumber"><i class="fa-solid fa-Mobile-volume"></i> Alternate
+                                                    Number</label>
+                                                <input type="text" class="form-control" id="AlterNumber" name="AlterNumber" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="Email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                                                <input type="text" class="form-control" id="Email" name="Email" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="dob"><i class="fa-solid fa-calendar-days"></i> Date of Birth</label>
+                                                <input type="date" class="form-control" id="dob" name="Dob" required>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="address"><i class="fa-solid fa-location-dot"></i> Address</label>
-                                                <textarea type="text" class="form-control" id="address" name="address" required></textarea>
+                                                <textarea type="text" class="form-control" id="address" name="Address" required></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="dob"><i class="fa-solid fa-calendar-days"></i> Date of Birth</label>
-                                                <input type="date" class="form-control" id="dob" name="dob" required>
+                                                <label for="dob"><i class="fa-solid fa-location-dot"></i> Permenent Address</label>
+                                                <textarea type="text" class="form-control" id="PermnentAddress" name="PermnentAddress" required></textarea>
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="medicalHistory"><i class="fa-regular fa-heart"></i> Medical History</label>
-                                                <textarea type="text" class="form-control" id="medicalHistory" name="medical_History" required></textarea>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                                 <!------------------------------------------------------>
@@ -510,7 +572,7 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="assignedTrainer">Assingned Trainer(Optional)</label>
-                                        <select class="form-select form-control" id="assignedTrainer" name="assigned_trainer">
+                                        <select class="form-select form-control" id="assignedTrainer" name="AssignStaff">
                                             <option selected disabled>Select Trainer</option>
                                             <?php
                                                         $query = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Is_active=1");
@@ -535,8 +597,44 @@ if (strlen($_SESSION['login']) == 0) {
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="currentWeight">Payment Mode</label>
+                                                <select class="form-control" name="PaymentMode" id="paymode" required>
+                                                        <option value="">-- Payment Mode --</option>
+                                                    <?php
+                                                        $query = mysqli_query($con, "SELECT PaymentMode FROM tblpaymode WHERE Is_active=1");
+                                                        while ($row = mysqli_fetch_array($query)) {
+                                                            echo '<option value="' . htmlentities($row['PaymentMode']) . '">' . htmlentities($row['PaymentMode']) . '</option>';
+                                                        }
+                                                        ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="receiptdate">Receipt</label>
+                                                <input type="date" class="form-control" name="ReceiptDate" id="receiptdate" required>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="receipttype">Receipt Type</label>
+                                                <select class="form-control" name="ReceiptType" id="paymode" required>
+                                                <option value="">-- Receipt Type --</option>
+                                                    <?php
+                                                        $query = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_active=1");
+                                                        while ($row = mysqli_fetch_array($query)) {
+                                                        echo '<option value="' . htmlentities($row['ReceiptNumber']) . '">' . htmlentities($row['ReceiptNumber']) . '</option>';
+                                                    }?>
+                                                 </select>
+                                            </div>
+                                        </div>
+
                                 
                                     </div>
+                                                    
+                                    
                                     
                                 </div>
                                 <!------------------------------------------------------>
@@ -545,19 +643,19 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="adharnum">Adhar Number</label>
-                                                <input type="text" class="form-control" name="adhar_Number" id="adharnum" required>
+                                                <input type="text" class="form-control" name="AadharNumber" id="adharnum" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="pannum">Pan Number</label>
-                                                <input type="text" class="form-control" name="pan_Number" id="pannum" required>
+                                                <input type="text" class="form-control" name="PanNumber" id="pannum" required>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="drivingnum">Driving License</label>
-                                                <input type="text" class="form-control" name="driving_Num" id="drivingnum" required>
+                                                <input type="text" class="form-control" name="DrivingNumber" id="drivingnum" required>
                                             </div>
                                         </div>
                                         <h4 style="margin-left:10px">Doctor's Details</h4>
@@ -565,17 +663,17 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="dname">Doctor's Name</label>
-                                                <input type="text" class="form-control" name="dname" id="dname" required>
+                                                <input type="text" class="form-control" name="DoctorName" id="dname" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="dnumber">Doctor's Number</label>
-                                                <input type="text" class="form-control" name="dnumber" id="dnumber" required>
+                                                <input type="text" class="form-control" name="DoctorNumber" id="dnumber" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <select class="form-control" name="medihistory" required>
+                                            <select class="form-control" name="MedicalHistory" required>
                                                 <option value="">-- Medical History --</option>
                                                 <option value="No">No</option>
                                                 <?php
@@ -592,39 +690,66 @@ if (strlen($_SESSION['login']) == 0) {
                                 <!------------------------------------------------------>
                                 <div class="tab-pane fade" id="progress">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        
+                                        <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="currentWeight">Payment Mode</label>
-                                                <select class="form-control" name="paymode" id="paymode" required>
-                                                        <option value="">-- Payment Mode --</option>
-                                                    <?php
-                                                        $query = mysqli_query($con, "SELECT PaymentMode FROM tblpaymode WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['PaymentMode']) . '">' . htmlentities($row['PaymentMode']) . '</option>';
-                                                        }
-                                                        ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="receiptdate">Receipt</label>
-                                                <input type="date" class="form-control" name="receiptdate" id="receiptdate" required>
+                                                <label for="current_weight">Weight</label>
+                                                <input type="text" class="form-control" name="current_weight" id="current_weight" required>
                                             </div>
                                         </div> 
-                                        <div class="col-md-6">
+                                        <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="receipttype">Receipt Type</label>
-                                                <select class="form-control" name="paymode" id="paymode" required>
-                                                <option value="">-- Receipt Type --</option>
-                                                    <?php
-                                                        $query = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                        echo '<option value="' . htmlentities($row['ReceiptNumber']) . '">' . htmlentities($row['ReceiptNumber']) . '</option>';
-                                                    }?>
-                                                 </select>
+                                                <label for="goal_weight">Goal Weight</label>
+                                                <input type="text" class="form-control" name="goal_weight" id="goal_weight" required>
+                                            </div>
+                                        </div> 
+                                        
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="body_fat">Body Fat</label>
+                                                <input type="text" class="form-control" name="body_fat" id="body_fat" required>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="muscle_mass">Mussle Mass</label>
+                                                <input type="text" class="form-control" name="muscle_mass" id="muscle_mass" required>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="chest">Chest</label>
+                                                <input type="text" class="form-control" name="chest" id="chest" required>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="waist">Waist</label>
+                                                <input type="text" class="form-control" name="waist" id="waist" required>
+                                            </div>
+                                        </div> 
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="hips">Hips</label>
+                                                <input type="text" class="form-control" name="hips" id="hips" required>
                                             </div>
                                         </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="arms">Arms</label>
+                                                <input type="text" class="form-control" name="arms" id="arms" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="thighs">Thighs</label>
+                                                <input type="text" class="form-control" name="thighs" id="thighs" required>
+                                            </div>
+                                        </div>
+                                    
+
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -695,16 +820,7 @@ if (strlen($_SESSION['login']) == 0) {
             }
         </script>
         <!-- Delete Modal Script -->
-        <script>
-            function openModal(id) {
-                document.getElementById('deleteModal').style.display = 'flex';
-                document.getElementById('confirmDelete').href = "?action=parmdel&rid=" + id;
-            }
-
-            function closeModal() {
-                document.getElementById('deleteModal').style.display = 'none';
-            }
-        </script>
+        <script src="assets/js/modal-alert.js"></script>
 
         <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>

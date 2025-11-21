@@ -34,7 +34,7 @@
                             <span>Payments</span></a>
                     </li> -->
                     <li class="has_sub">
-                        <a href="manage-analytics.php" class="waves-effect"><i class="fa-solid fa-chart-column"></i>
+                        <a href="manage-member.php" class="waves-effect"><i class="fa-solid fa-chart-column"></i>
                             <span>Analytics</span></a>
                     </li>
                 <?php endif; ?>
