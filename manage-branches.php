@@ -169,6 +169,7 @@ if (strlen($_SESSION['login']) == 0) {
                             </button>
                         </div>
                         <div class="modal-body">
+                            <input type="hidden" id="branch_id" name="branch_id" value="">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">

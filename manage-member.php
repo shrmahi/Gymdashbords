@@ -823,6 +823,7 @@ if (strlen($_SESSION['login']) == 0) {
         <script src="assets/js/modal-alert.js"></script>
 
         <!-- jQuery and App Scripts -->
+        <script src="assets/js/url.js"></script>
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
         <script src="assets/js/detect.js"></script>
