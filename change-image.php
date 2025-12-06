@@ -22,73 +22,70 @@ echo "<script>alert('Invalid format. Only jpg / jpeg/ png /gif format allowed');
 }
 else
 {
-//rename the image file
-$imgnewfile=md5($imgfile).$extension;
-// Code for move image into directory
-move_uploaded_file($_FILES["postimage"]["tmp_name"],"postimages/".$imgnewfile);
+<?php
+session_start();
+include('includes/config.php');
+error_reporting(0);
+if (strlen($_SESSION['login']) == 0) {
+    header('location:index.php');
+} else {
+    if (isset($_POST['update'])) {
+        $maxSize = 2 * 1024 * 1024; // 2 MB
+        $allowed_ext = array('jpg', 'jpeg', 'png', 'gif');
 
+        if (!isset($_FILES['postimage']) || $_FILES['postimage']['error'] !== UPLOAD_ERR_OK) {
+            $error = "No file uploaded or upload error.";
+        } else {
+            $tmpName = $_FILES['postimage']['tmp_name'];
+            $origName = $_FILES['postimage']['name'];
+            $fileSize = $_FILES['postimage']['size'];
 
+            $imgInfo = @getimagesize($tmpName);
+            if ($imgInfo === false) {
+                $error = "Uploaded file is not a valid image.";
+            } else {
+                $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowed_ext)) {
+                    $error = "Invalid file extension. Only jpg, jpeg, png, gif allowed.";
+                } elseif ($fileSize > $maxSize) {
+                    $error = "File is too large. Maximum size is 2 MB.";
+                } else {
+                    $imgnewfile = time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+                    $targetDir = __DIR__ . DIRECTORY_SEPARATOR . 'postimages' . DIRECTORY_SEPARATOR;
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0755, true);
+                    }
+                    $targetPath = $targetDir . $imgnewfile;
 
-$postid=intval($_GET['pid']);
-$query=mysqli_query($con,"update tblposts set PostImage='$imgnewfile' where id='$postid'");
-if($query)
-{
-$msg="Post Feature Image updated ";
-}
-else{
-$error="Something went wrong . Please try again.";    
-} 
-}
-}
+                    if (move_uploaded_file($tmpName, $targetPath)) {
+                        $postid = intval($_GET['pid']);
+
+                        $oldQ = mysqli_query($con, "SELECT PostImage FROM tblposts WHERE id='$postid' LIMIT 1");
+                        if ($oldQ && $oldR = mysqli_fetch_array($oldQ)) {
+                            $oldFile = $oldR['PostImage'];
+                            if ($oldFile) {
+                                $oldPath = $targetDir . $oldFile;
+                                if (file_exists($oldPath)) {
+                                    @unlink($oldPath);
+                                }
+                            }
+                        }
+
+                        $imgnewfile_sql = mysqli_real_escape_string($con, $imgnewfile);
+                        $query = mysqli_query($con, "UPDATE tblposts SET PostImage='$imgnewfile_sql' WHERE id='$postid'");
+                        if ($query) {
+                            $msg = "Post Feature Image updated";
+                        } else {
+                            $error = "Database update failed. Please try again.";
+                        }
+                    } else {
+                        $error = "Failed to move uploaded file.";
+                    }
+                }
+            }
+        }
+    }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-        <meta name="author" content="Coderthemes">
-
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="assets/images/favicon.ico">
-        <!-- App title -->
-        <title>Newsportal | Add Post</title>
-
-        <!-- Summernote css -->
-        <link href="../plugins/summernote/summernote.css" rel="stylesheet" />
-
-        <!-- Select2 -->
-        <link href="../plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-
-        <!-- Jquery filer css -->
-        <link href="../plugins/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
-        <link href="../plugins/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
-
-        <!-- App css -->
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/icons.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
-        <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
-        <script src="assets/js/modernizr.min.js"></script>
- <script>
-function getSubCat(val) {
-  $.ajax({
-  type: "POST",
-  url: "get_subcategory.php",
-  data:'catid='+val,
-  success: function(data){
-    $("#subcategory").html(data);
-  }
-  });
-  }
-  </script>
-    </head>
-
-
     <body class="fixed-left">
 
         <!-- Begin page -->

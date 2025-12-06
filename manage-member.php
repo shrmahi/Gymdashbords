@@ -207,7 +207,7 @@ if (strlen($_SESSION['login']) == 0) {
     $query = mysqli_query($con,
     "SELECT 
         m.id, m.FirstName, m.LastName, m.Email, m.Mobile, m.PakageType, m.PaymentMode, m.Is_Active,
-        ms.branch_manager, ms.membership_type, ms.membership_status, ms.assigned_trainer
+        ms.branch_manager, ms.membership_type, ms.membership_status, ms.assigned_trainer, ms.current_weight
     FROM member_details m
     LEFT JOIN measurements ms ON m.id = ms.member_id
     $whereClause
@@ -219,7 +219,6 @@ if (strlen($_SESSION['login']) == 0) {
 
     <!DOCTYPE html>
     <html lang="en">
-
     <head>
         <title>Gym Dashboard | Manage Members</title>
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -231,9 +230,7 @@ if (strlen($_SESSION['login']) == 0) {
         <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="../plugins/switchery/switchery.min.css">
         <script src="assets/js/modernizr.min.js"></script>
-        
     </head>
-
     <body class="fixed-left">
         <div id="wrapper">
             <?php include('includes/topheader.php'); ?>
@@ -241,7 +238,6 @@ if (strlen($_SESSION['login']) == 0) {
             <div class="content-page">
                 <div class="content">
                     <div class="container">
-
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="page-title-box">
@@ -254,13 +250,11 @@ if (strlen($_SESSION['login']) == 0) {
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-sm-12">
                                 <?php include('alert_message.php'); ?>
                             </div>
                         </div>
-
                         <!-- Search and Filter Section -->
                         <div class="row">
                             <div class="col-md-12">
@@ -291,7 +285,6 @@ if (strlen($_SESSION['login']) == 0) {
                                 </div>
                             </div>
                         </div>
-
                         <!-- Members List -->
                         <div class="row">
                             <div class="col-md-12">
@@ -303,7 +296,6 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <div class="member-avatar">
                                                     <?php echo strtoupper(substr($row['FirstName'], 0, 1)); ?>
                                                 </div>
-                                                
                                                 <div>
                                                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                                         <h5 class="member-name"><?php echo htmlentities($row['FirstName'] . ' ' . $row['LastName']); ?></h5> &nbsp;&nbsp;
@@ -321,7 +313,6 @@ if (strlen($_SESSION['login']) == 0) {
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                                                 <div class="stats-container">
                                                     <div class="stat-item">
@@ -331,7 +322,6 @@ if (strlen($_SESSION['login']) == 0) {
                                                             <div class="stat-label">Total Visits</div>
                                                         </div>
                                                     </div>
-                                                    
                                                     <div class="stat-item">
                                                         <i class="fa fa-calendar" style="color: #007bff;"></i>
                                                         <div>
@@ -399,7 +389,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <?php } ?>
                                             </ul>
                                         </div>
-                                    <?php } ?>
+                                <?php } ?>
                                     
                                 <?php } else { ?>
                                     <div class="text-center" style="padding: 50px;">
@@ -428,12 +418,11 @@ if (strlen($_SESSION['login']) == 0) {
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addMemberModalLabel"><span class="icon-bg"><i
-                                        class="fa-solid fa-chart-simple fa-2x"></i></span> Add New Member</h5>
+                                        class="fa-solid fa-user fa-2x"></i></span> Add New Member</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
                         <div class="modal-body">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#personal" data-toggle="tab">Personal</a></li>
@@ -756,7 +745,7 @@ if (strlen($_SESSION['login']) == 0) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-success" name="submit">Save Package</button>
+                            <button type="submit" class="btn btn-success" name="submit">Save Member</button>
                         </div>
                     </div>
                 </form>
@@ -768,11 +757,11 @@ if (strlen($_SESSION['login']) == 0) {
 
         <script>
             var resizefunc = [];
-            
+
             function applyFilters() {
                 var search = document.querySelector('input[name="search"]').value;
                 var status = document.querySelector('select[name="status"]').value;
-                var url = 'manage-analytics.php?';
+                var url = 'manage-member.php?';
                 
                 if (search) url += 'search=' + encodeURIComponent(search) + '&';
                 if (status && status !== 'all') url += 'status=' + encodeURIComponent(status) + '&';
@@ -782,7 +771,6 @@ if (strlen($_SESSION['login']) == 0) {
                 
                 window.location.href = url;
             }
-            
             // Allow Enter key to trigger search
             document.addEventListener('DOMContentLoaded', function() {
                 var searchInput = document.querySelector('input[name="search"]');
@@ -800,7 +788,7 @@ if (strlen($_SESSION['login']) == 0) {
         setTimeout(function () {
             $('.alert').fadeOut('slow');
         }, 5000);
-    </script>
+        </script>
         <script>
             function previewImage(event) {
                 const input = event.target;

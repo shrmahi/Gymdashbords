@@ -8,91 +8,145 @@ if (strlen($_SESSION['login']) == 0) {
     exit();
 } else {
 
+    // AJAX: return member data as JSON for edit modal
+    if (isset($_GET['get_member'])) {
+        $mid = intval($_GET['get_member']);
+        $res = mysqli_query($con, "SELECT * FROM measurements WHERE id='$mid' LIMIT 1");
+        $member = mysqli_fetch_assoc($res);
+        header('Content-Type: application/json');
+        echo json_encode($member);
+        exit();
+    }
+
     // ========== INSERT / UPDATE MEMBER ==========
     if (isset($_POST['submit'])) {
 
-        // Escape all inputs
-        foreach ($_POST as $key => $value) {
-            $_POST[$key] = mysqli_real_escape_string($con, $value);
-        }
+        // Use prepared statements for security
+        $member_id       = isset($_POST['member_id']) ? intval($_POST['member_id']) : 0;
+        $first_name      = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
+        $last_name       = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
+        $phone           = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+        $email           = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $dob             = isset($_POST['dob']) ? trim($_POST['dob']) : '';
+        $address         = isset($_POST['address']) ? trim($_POST['address']) : '';
+        $gender          = isset($_POST['gender']) ? trim($_POST['gender']) : '';
+        $maritalstatus   = isset($_POST['maritalstatus']) ? trim($_POST['maritalstatus']) : '';
 
-        $member_id       = $_POST['member_id'];
-        $first_name      = $_POST['first_name'];
-        $last_name       = $_POST['last_name'];
-        $phone           = $_POST['phone'];
-        $email           = $_POST['email'];
-        $dob             = $_POST['dob'];
-        $medical         = $_POST['medical_History'];
-        $branch          = $_POST['branch_manager'];
-        $membership_type = $_POST['membership_type'];
-        $status          = $_POST['membership_status'];
-        $trainer         = $_POST['assigned_trainer'];
+        $medical         = isset($_POST['medical_History']) ? trim($_POST['medical_History']) : '';
+        $branch          = isset($_POST['branch_manager']) ? trim($_POST['branch_manager']) : '';
+        $membership_type = isset($_POST['membership_type']) ? trim($_POST['membership_type']) : '';
+        $status          = isset($_POST['membership_status']) ? trim($_POST['membership_status']) : '';
+        $trainer         = isset($_POST['assigned_trainer']) ? trim($_POST['assigned_trainer']) : '';
+        $shift_type      = isset($_POST['shift_type']) ? trim($_POST['shift_type']) : '';
 
-        $contact_name  = $_POST['contact_name'];
-        $relationship  = $_POST['relationship'];
-        $contact_phone = $_POST['phone_Number'];
+        $contact_name  = isset($_POST['contact_name']) ? trim($_POST['contact_name']) : '';
+        $relationship  = isset($_POST['relationship']) ? trim($_POST['relationship']) : '';
+        $contact_phone = isset($_POST['phone_Number']) ? trim($_POST['phone_Number']) : '';
 
-        $current_weight = $_POST['current_weight'];
-        $goal_weight    = $_POST['goal_weight'];
-        $body_fat       = $_POST['body_fat'];
-        $muscle_mass    = $_POST['muscle_mass'];
-        $chest          = $_POST['chest'];
-        $waist          = $_POST['waist'];
-        $hips           = $_POST['hips'];
-        $arms           = $_POST['arms'];
-        $thighs         = $_POST['thighs'];
+        $current_weight = isset($_POST['current_weight']) ? trim($_POST['current_weight']) : '';
+        $goal_weight    = isset($_POST['goal_weight']) ? trim($_POST['goal_weight']) : '';
+        $body_fat       = isset($_POST['body_fat']) ? trim($_POST['body_fat']) : '';
+        $muscle_mass    = isset($_POST['muscle_mass']) ? trim($_POST['muscle_mass']) : '';
+        $chest          = isset($_POST['chest']) ? trim($_POST['chest']) : '';
+        $waist          = isset($_POST['waist']) ? trim($_POST['waist']) : '';
+        $hips           = isset($_POST['hips']) ? trim($_POST['hips']) : '';
+        $arms           = isset($_POST['arms']) ? trim($_POST['arms']) : '';
+        $thighs         = isset($_POST['thighs']) ? trim($_POST['thighs']) : '';
+
+        // Document fields
+        $adhar_number    = isset($_POST['adhar_Number']) ? trim($_POST['adhar_Number']) : '';
+        $pan_number      = isset($_POST['pan_Number']) ? trim($_POST['pan_Number']) : '';
+        $driving_num     = isset($_POST['driving_Num']) ? trim($_POST['driving_Num']) : '';
+        $doctor_name     = isset($_POST['dname']) ? trim($_POST['dname']) : '';
+        $doctor_number   = isset($_POST['dnumber']) ? trim($_POST['dnumber']) : '';
+        $paymode         = isset($_POST['paymode']) ? trim($_POST['paymode']) : '';
+        $receiptdate     = isset($_POST['receiptdate']) ? trim($_POST['receiptdate']) : '';
+        $receipttype     = isset($_POST['receipttype']) ? trim($_POST['receipttype']) : '';
+        $medihistory     = isset($_POST['medihistory']) ? trim($_POST['medihistory']) : '';
+
         $Is_Active      = 1;
 
         // =================== UPDATE MEMBER ===================
         if (!empty($member_id)) {
 
             $sql = "UPDATE measurements SET 
-                first_name='$first_name',
-                last_name='$last_name',
-                phone='$phone',
-                email='$email',
-                dob='$dob',
-                medical_history='$medical',
-                branch_manager='$branch',
-                membership_type='$membership_type',
-                membership_status='$status',
-                assigned_trainer='$trainer',
-                emg_contact_name='$contact_name',
-                emg_relationship='$relationship',
-                emg_phone='$contact_phone',
-                current_weight='$current_weight',
-                goal_weight='$goal_weight',
-                body_fat='$body_fat',
-                muscle_mass='$muscle_mass',
-                chest='$chest',
-                waist='$waist',
-                hips='$hips',
-                arms='$arms',
-                thighs='$thighs'
-                WHERE id='$member_id'";
-
-            $query = mysqli_query($con, $sql);
+                first_name=?,
+                last_name=?,
+                phone=?,
+                email=?,
+                dob=?,
+                address=?,
+                gender=?,
+                maritalstatus=?,
+                medical_history=?,
+                branch_manager=?,
+                membership_type=?,
+                membership_status=?,
+                assigned_trainer=?,
+                shift_type=?,
+                emg_contact_name=?,
+                emg_relationship=?,
+                emg_phone=?,
+                current_weight=?,
+                goal_weight=?,
+                body_fat=?,
+                muscle_mass=?,
+                chest=?,
+                waist=?,
+                hips=?,
+                arms=?,
+                thighs=?,
+                adhar_Number=?,
+                pan_Number=?,
+                driving_Num=?,
+                dname=?,
+                dnumber=?,
+                paymode=?,
+                receiptdate=?,
+                receipttype=?,
+                medihistory=?
+                WHERE id=?";
+            
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, "ssssssssssssssssssssssssssssssssss", 
+                $first_name, $last_name, $phone, $email, $dob, $address, $gender, $maritalstatus,
+                $medical, $branch, $membership_type, $status, $trainer, $shift_type,
+                $contact_name, $relationship, $contact_phone,
+                $current_weight, $goal_weight, $body_fat, $muscle_mass,
+                $chest, $waist, $hips, $arms, $thighs,
+                $adhar_number, $pan_number, $driving_num, $doctor_name, $doctor_number,
+                $paymode, $receiptdate, $receipttype, $medihistory, $member_id
+            );
+            $query = mysqli_stmt_execute($stmt);
             $msg = $query ? "Member updated successfully." : "Update failed. Try again.";
+            mysqli_stmt_close($stmt);
 
         } else {
 
             // =================== INSERT MEMBER ===================
             $sql = "INSERT INTO measurements(
-                first_name, last_name, phone, email, dob, medical_history,
-                branch_manager, membership_type, membership_status, assigned_trainer,
+                first_name, last_name, phone, email, dob, address, gender, maritalstatus,
+                medical_history, branch_manager, membership_type, membership_status, assigned_trainer, shift_type,
                 emg_contact_name, emg_relationship, emg_phone,
                 current_weight, goal_weight, body_fat, muscle_mass,
-                chest, waist, hips, arms, thighs, Is_Active
-            ) VALUES (
-                '$first_name','$last_name','$phone','$email','$dob','$medical',
-                '$branch','$membership_type','$status','$trainer',
-                '$contact_name','$relationship','$contact_phone',
-                '$current_weight','$goal_weight','$body_fat','$muscle_mass',
-                '$chest','$waist','$hips','$arms','$thighs','$Is_Active'
-            )";
+                chest, waist, hips, arms, thighs,
+                adhar_Number, pan_Number, driving_Num, dname, dnumber,
+                paymode, receiptdate, receipttype, medihistory, Is_Active
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-            $query = mysqli_query($con, $sql);
+            $stmt = mysqli_prepare($con, $sql);
+            mysqli_stmt_bind_param($stmt, "ssssssssssssssssssssssssssssssssss",
+                $first_name, $last_name, $phone, $email, $dob, $address, $gender, $maritalstatus,
+                $medical, $branch, $membership_type, $status, $trainer, $shift_type,
+                $contact_name, $relationship, $contact_phone,
+                $current_weight, $goal_weight, $body_fat, $muscle_mass,
+                $chest, $waist, $hips, $arms, $thighs,
+                $adhar_number, $pan_number, $driving_num, $doctor_name, $doctor_number,
+                $paymode, $receiptdate, $receipttype, $medihistory, $Is_Active
+            );
+            $query = mysqli_stmt_execute($stmt);
             $msg = $query ? "Member added successfully." : "Insert failed. Try again.";
+            mysqli_stmt_close($stmt);
         }
     }
 
@@ -129,6 +183,7 @@ if (strlen($_SESSION['login']) == 0) {
 
     // ========== SEARCH & FILTER ==========
     $whereClause = "WHERE 1=1";
+    $searchTerm = '';
 
     if (!empty($_GET['search'])) {
         $searchTerm = mysqli_real_escape_string($con, $_GET['search']);
@@ -297,14 +352,14 @@ if (strlen($_SESSION['login']) == 0) {
                                                     <div class="stat-item">
                                                         <i class="fa fa-trophy" style="color: #ffc107;"></i>
                                                         <div>
-                                                            <div class="stat-value">Premium</div>
-                                                            <div class="stat-label">Joined <?php echo date('m/d/Y', strtotime($row['JoinDate'])); ?></div>
+                                                            <div class="stat-value"><?php echo htmlentities($row['membership_type']); ?></div>
+                                                            <div class="stat-label">Joined <?php echo isset($row['JoinDate']) ? date('m/d/Y', strtotime($row['JoinDate'])) : 'N/A'; ?></div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 
                                                 <div class="text-right">
-                                                    <a href="manage-analytics.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-edit">
+                                                    <a href="#" class="btn btn-sm btn-edit editMemberBtn" data-id="<?php echo $row['id']; ?>" data-toggle="modal" data-target="#addMemberModal">
                                                         <i class="fa fa-edit"></i> Edit
                                                     </a>
                                                     <?php if ($row['Is_Active']) { ?>
@@ -368,8 +423,8 @@ if (strlen($_SESSION['login']) == 0) {
         <!-- Add/Edit Package Modal -->
         <div class="modal fade custom-modal-rounded" id="addMemberModal" tabindex="-1" role="dialog"
             aria-labelledby="addMemberModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <form method="POST">
+                <div class="modal-dialog" role="document">
+                <form method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="member_id" id="member_id">
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
@@ -392,7 +447,7 @@ if (strlen($_SESSION['login']) == 0) {
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input type="file" class="form-control" name="postimage" id="postimage"
-                                                accept="image/*" required onchange="previewImage(event)">
+                                                accept="image/*" onchange="previewImage(event)">
                                         </div>
                                         <div class="col-md-6">
                                             <img id="imagePreview" src="#" alt="Selected Image"
@@ -432,17 +487,17 @@ if (strlen($_SESSION['login']) == 0) {
                                     </div>
 
                                 </div>
-                                <div class="col-md-6">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="branchNumber"><i class="fa-solid fa-phone-volume"></i> Phone
                                                     Number</label>
-                                                <input type="text" class="form-control" id="branchNumber" name="branch_number" required>
+                                                <input type="text" class="form-control" id="branchNumber" name="phone" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="branchEmail"><i class="fa-regular fa-envelope"></i> Email Address</label>
-                                                <input type="text" class="form-control" id="branchEmail" name="branch_email" required>
+                                                <input type="text" class="form-control" id="branchEmail" name="email" required>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
@@ -461,6 +516,27 @@ if (strlen($_SESSION['login']) == 0) {
                                             <div class="form-group">
                                                 <label for="medicalHistory"><i class="fa-regular fa-heart"></i> Medical History</label>
                                                 <textarea type="text" class="form-control" id="medicalHistory" name="medical_History" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <h4>Emergency Contact</h4>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="contactName">Contact Name</label>
+                                                <input type="text" class="form-control" id="contactName" name="contact_name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="relationship">Relationship</label>
+                                                <input type="text" class="form-control" id="relationship" name="relationship">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="contactPhoneNumber">Contact Phone</label>
+                                                <input type="text" class="form-control" id="contactPhoneNumber" name="phone_Number">
                                             </div>
                                         </div>
                                     </div>
@@ -523,8 +599,8 @@ if (strlen($_SESSION['login']) == 0) {
                                         </div>
                                          <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="assignedTrainer">Shift Type</label>
-                                        <select class="form-select form-control" id="assignedTrainer" name="assigned_trainer">
+                                        <label for="shiftType">Shift Type</label>
+                                        <select class="form-select form-control" id="shiftType" name="shift_type">
                                             <option selected disabled>Select Shift</option>
                                             <?php
                                                         $query = mysqli_query($con, "SELECT ShiftName FROM tblshift WHERE Is_active=1");
@@ -615,7 +691,7 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="receipttype">Receipt Type</label>
-                                                <select class="form-control" name="paymode" id="paymode" required>
+                                                <select class="form-control" name="receipttype" id="receipttype" required>
                                                 <option value="">-- Receipt Type --</option>
                                                     <?php
                                                         $query = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_active=1");
@@ -623,6 +699,61 @@ if (strlen($_SESSION['login']) == 0) {
                                                         echo '<option value="' . htmlentities($row['ReceiptNumber']) . '">' . htmlentities($row['ReceiptNumber']) . '</option>';
                                                     }?>
                                                  </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12"><h4>Measurements</h4></div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="currentWeight">Current Weight (kg)</label>
+                                                <input type="text" class="form-control" id="currentWeight" name="current_weight">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="goalWeight">Goal Weight (kg)</label>
+                                                <input type="text" class="form-control" id="goalWeight" name="goal_weight">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="bodyFat">Body Fat (%)</label>
+                                                <input type="text" class="form-control" id="bodyFat" name="body_fat">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="muscleMass">Muscle Mass</label>
+                                                <input type="text" class="form-control" id="muscleMass" name="muscle_mass">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="chest">Chest (cm)</label>
+                                                <input type="text" class="form-control" id="chest" name="chest">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="waist">Waist (cm)</label>
+                                                <input type="text" class="form-control" id="waist" name="waist">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="hips">Hips (cm)</label>
+                                                <input type="text" class="form-control" id="hips" name="hips">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="arms">Arms (cm)</label>
+                                                <input type="text" class="form-control" id="arms" name="arms">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="thighs">Thighs (cm)</label>
+                                                <input type="text" class="form-control" id="thighs" name="thighs">
                                             </div>
                                         </div>
                                     </div>
@@ -705,6 +836,42 @@ if (strlen($_SESSION['login']) == 0) {
                 document.getElementById('deleteModal').style.display = 'none';
             }
         </script>
+        <script>
+            // Populate Edit Modal with existing data
+            function populateEditModal(id, firstName, lastName, gender, maritalStatus, phone, email, address, dob, medicalHistory, branch, membershipType, membershipStatus, assignedTrainer, shiftType, adharNumber, panNumber, drivingNum, doctorName, doctorNumber, payMode, receiptDate, receiptType) {
+                document.getElementById('member_id').value = id;
+                document.getElementById('firstName').value = firstName;
+                document.getElementById('lastName').value = lastName;
+                
+                // Set gender radio buttons         
+                var genderRadios = document.getElementsByName('gender');
+                for (var i = 0; i < genderRadios.length; i++) {
+                    if (genderRadios[i].value === gender) {
+                        genderRadios[i].checked = true;
+                    }   
+                }
+                document.getElementById('maritalstatus').value = maritalStatus;
+                document.getElementById('branchNumber').value = phone;
+                document.getElementById('branchEmail').value = email;   
+                document.getElementById('address').value = address;
+                document.getElementById('dob').value = dob;
+                document.getElementById('medicalHistory').value = medicalHistory;
+                document.getElementById('branchManager').value = branch;
+                document.getElementById('membershipType').value = membershipType;   
+                document.getElementById('membershipStatus').value = membershipStatus;
+                document.getElementById('assignedTrainer').value = assignedTrainer;
+                document.getElementById('shiftType').value = shiftType;
+                document.getElementById('adharnum').value = adharNumber;
+                document.getElementById('pannum').value = panNumber;
+                document.getElementById('drivingnum').value = drivingNum;
+                document.getElementById('dname').value = doctorName;
+                document.getElementById('dnumber').value = doctorNumber;
+                document.getElementById('paymode').value = payMode;
+                document.getElementById('receiptdate').value = receiptDate;
+                document.getElementById('receipttype').value = receiptType;
+            }
+        </script>
+
 
         <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>
@@ -719,6 +886,135 @@ if (strlen($_SESSION['login']) == 0) {
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
         <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
+
+    <script>
+        // Reset modal when Add Member is clicked
+        $(document).on('click', '.btnAddMember', function () {
+            $('#member_id').val('');
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $('input[name="gender"]').prop('checked', false);
+            $('#maritalstatus').val('').trigger('change');
+            $('#branchNumber').val('');
+            $('#branchEmail').val('');
+            $('#address').val('');
+            $('#dob').val('');
+            $('#medicalHistory').val('');
+            $('#branchManager').val('').trigger('change');
+            $('#membershipType').val('').trigger('change');
+            $('#membershipStatus').val('').trigger('change');
+            $('#assignedTrainer').val('').trigger('change');
+            $('#shiftType').val('').trigger('change');
+            $('input[name="contact_name"]').val('');
+            $('input[name="relationship"]').val('');
+            $('input[name="phone_Number"]').val('');
+            $('input[name="current_weight"]').val('');
+            $('input[name="goal_weight"]').val('');
+            $('input[name="body_fat"]').val('');
+            $('input[name="muscle_mass"]').val('');
+            $('input[name="chest"]').val('');
+            $('input[name="waist"]').val('');
+            $('input[name="hips"]').val('');
+            $('input[name="arms"]').val('');
+            $('input[name="thighs"]').val('');
+            
+            // Reset documents tab
+            $('#adharnum').val('');
+            $('#pannum').val('');
+            $('#drivingnum').val('');
+            $('#dname').val('');
+            $('#dnumber').val('');
+            
+            // Reset progress tab
+            $('#paymode').val('').trigger('change');
+            $('#receiptdate').val('');
+            $('#receipttype').val('').trigger('change');
+            
+            $('#imagePreview').hide();
+            $('input[name="postimage"]').val('');
+            $('.modal-title').text('Add New Member');
+            $('button[name=submit]').text('Save Member');
+        });
+
+        // Click handler for Edit buttons: fetch member JSON and populate modal
+        $(document).on('click', '.editMemberBtn', function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            if (!id) return;
+            $.getJSON('manage-analytics.php', { get_member: id }, function (data) {
+                if (!data) { alert('Member not found'); return; }
+                try {
+                    // populate fields (use IDs and names set in modal)
+                    $('#member_id').val(data.id || '');
+                    $('#firstName').val(data.first_name || '');
+                    $('#lastName').val(data.last_name || '');
+                    
+                    // gender radios
+                    if (data.gender) {
+                        $('input[name="gender"]').each(function(){ 
+                            if ($(this).val() === data.gender) $(this).prop('checked', true);
+                            else $(this).prop('checked', false);
+                        });
+                    }
+                    
+                    $('#maritalstatus').val(data.maritalstatus || '').trigger('change');
+                    $('#branchNumber').val(data.phone || '');
+                    $('#branchEmail').val(data.email || '');
+                    $('#address').val(data.address || '');
+                    $('#dob').val(data.dob || '');
+                    $('#medicalHistory').val(data.medical_history || '');
+                    $('#branchManager').val(data.branch_manager || '').trigger('change');
+                    $('#membershipType').val(data.membership_type || '').trigger('change');
+                    $('#membershipStatus').val(data.membership_status || '').trigger('change');
+                    $('#assignedTrainer').val(data.assigned_trainer || '').trigger('change');
+                    $('#shiftType').val(data.shift_type || '').trigger('change');
+                    
+                    // emergency contact
+                    $('input[name="contact_name"]').val(data.emg_contact_name || '');
+                    $('input[name="relationship"]').val(data.emg_relationship || '');
+                    $('input[name="phone_Number"]').val(data.emg_phone || '');
+                    
+                    // measurements
+                    $('input[name="current_weight"]').val(data.current_weight || '');
+                    $('input[name="goal_weight"]').val(data.goal_weight || '');
+                    $('input[name="body_fat"]').val(data.body_fat || '');
+                    $('input[name="muscle_mass"]').val(data.muscle_mass || '');
+                    $('input[name="chest"]').val(data.chest || '');
+                    $('input[name="waist"]').val(data.waist || '');
+                    $('input[name="hips"]').val(data.hips || '');
+                    $('input[name="arms"]').val(data.arms || '');
+                    $('input[name="thighs"]').val(data.thighs || '');
+
+                    // other docs / receipts
+                    $('#adharnum').val(data.adhar_Number || '');
+                    $('#pannum').val(data.pan_Number || '');
+                    $('#drivingnum').val(data.driving_Num || '');
+                    $('#dname').val(data.dname || '');
+                    $('#dnumber').val(data.dnumber || '');
+                    $('#paymode').val(data.paymode || '').trigger('change');
+                    $('#receiptdate').val(data.receiptdate || '');
+                    $('#receipttype').val(data.receipttype || '').trigger('change');
+                    
+                    // show image if path stored in 'photo' or 'postimage'
+                    if (data.photo) { 
+                        $('#imagePreview').attr('src', data.photo).show(); 
+                    } else if (data.postimage) { 
+                        $('#imagePreview').attr('src', data.postimage).show(); 
+                    } else { 
+                        $('#imagePreview').hide(); 
+                    }
+
+                    // update modal title/button
+                    $('.modal-title').text('Edit Member');
+                    $('button[name=submit]').text('Update Member');
+                    $('#addMemberModal').modal('show');
+                } catch(e) {
+                    console.error('Error populating form:', e);
+                    alert('Error populating member data');
+                }
+            }).fail(function () { alert('Failed to fetch member details'); });
+        });
+    </script>
 
     </body>
 
