@@ -246,6 +246,10 @@ File: Components
   border-radius: 6px;
   color: white;
 }
+.btn-active:hover{
+  color: white;
+  font-weight: bold;
+}
 
 .btn-edit {
   background-color: #f7b801 !important;
@@ -254,11 +258,21 @@ File: Components
   color: white;
 }
 
+.btn-edit:hover{
+  color: white;
+  font-weight: bold;
+}
+
 .btn-delete {
   background-color: #d00000 !important;
   border: 1px solid #d00000 !important;
   border-radius: 6px;
   color: white;
+}
+.btn-delete:hover{
+  color: white;
+  font-weight: bold;
+
 }
 
 .btn-deactive {
@@ -266,10 +280,13 @@ File: Components
   border: 1px solid #3c096c !important;
   border-radius: 6px;
   color: white;
-
 }
 
+.btn-deactive:hover{
+  color: white;
+  font-weight: bold;
 
+}
 .btn-success:hover,
 .btn-success:focus,
 .btn-success:active,

@@ -115,20 +115,25 @@ if (strlen($_SESSION['login']) == 0) {
                                             <hr>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
-                                                    <?php echo htmlentities($row['Duration']); ?></span></div>
+                                                    <?php echo htmlentities($row['Duration']); ?></span>
+                                            </div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
                                                     Gym Equipment
-                                                    Access</span></div>
+                                                    Access</span>
+                                            </div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
-                                                    Group Classes</span></div>
+                                                    Group Classes</span>
+                                            </div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
-                                                    Nutrition Consultation</span></div>
+                                                    Nutrition Consultation</span>
+                                            </div>
                                             <div class="info-line"><span><i class="fa-solid fa-circle-check"
                                                         style="color:green"></i>
-                                                    Locker Room</span></div>
+                                                    Locker Room</span>
+                                            </div>
                                             <hr>
                                             <!-- <div class="mb-3"><small>Available in all branches</small></div> -->
                                             <div class="d-flex justify-content-between card-footer-btns">
@@ -138,12 +143,14 @@ if (strlen($_SESSION['login']) == 0) {
                                                     data-duration="<?php echo htmlentities($row['Duration']); ?>"
                                                     data-days="<?php echo htmlentities($row['Days']); ?>"
                                                     data-price="<?php echo htmlentities($row['Price']); ?>" data-toggle="modal"
-                                                    data-target="#addPackageModal">Edit Package</a>
+                                                    data-target="#addPackageModal">
+                                                    Edit Package
+                                                </a>
                                                 <!-- <a href="#" class="text-secondary">Delete Package</a> -->
                                                 <a href="#" class="text-danger"
                                                         onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'package')">
                                                             Delete
-                                                        </a>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>

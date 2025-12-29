@@ -2,6 +2,8 @@
 session_start();
 include('includes/config.php');
 error_reporting(0);
+    $MemberBid = '';
+    $PostImage = '';
 
 if (strlen($_SESSION['login']) == 0) {
     header('location:index.php');
@@ -43,8 +45,8 @@ if (strlen($_SESSION['login']) == 0) {
     $ReceiptType = $_POST['ReceiptType'];
     $ReceiptDate = $_POST['ReceiptDate'];
     $PostingDate = $_POST['PostingDate'];
-    $Is_Active = $_POST['Is_Active'];
-    $PostImage = $_POST['PostImage'];
+    $Is_Active = isset($_POST['Is_Active']) ? $_POST['Is_Active'] : 1;
+    $PostImage = '';
     $postedBy = $_SESSION['login'];
     $lastUpdatedBy = $_SESSION['login'];
 
@@ -66,11 +68,35 @@ if (strlen($_SESSION['login']) == 0) {
     $arms = $_POST['arms'];
     $thighs = $_POST['thighs'];
 
+    // Handle file upload (if any)
+    if (isset($_FILES['PostImage']) && isset($_FILES['PostImage']['tmp_name']) && $_FILES['PostImage']['tmp_name'] != '') {
+        $uploadDir = __DIR__ . DIRECTORY_SEPARATOR . 'postimages' . DIRECTORY_SEPARATOR;
+        if (!is_dir($uploadDir)) {
+            @mkdir($uploadDir, 0755, true);
+        }
+        if ($_FILES['PostImage']['error'] === UPLOAD_ERR_OK) {
+            $origName = basename($_FILES['PostImage']['name']);
+            $safeName = time() . '_' . preg_replace('/[^A-Za-z0-9._-]/', '_', $origName);
+            $target = $uploadDir . $safeName;
+            if (move_uploaded_file($_FILES['PostImage']['tmp_name'], $target)) {
+                $PostImage = $safeName;
+            }
+        }
+    }
+
     mysqli_begin_transaction($con);
 
     try {
 
         if (!empty($MemberBid)) {
+            // If no new upload, preserve existing image
+            if (empty($PostImage)) {
+                $existingRes = mysqli_query($con, "SELECT PostImage FROM member_details WHERE id='" . intval($MemberBid) . "' LIMIT 1");
+                if ($existingRes && mysqli_num_rows($existingRes) > 0) {
+                    $existingRow = mysqli_fetch_assoc($existingRes);
+                    $PostImage = $existingRow['PostImage'];
+                }
+            }
             // ================== UPDATE MEMBER ==================
             $sql1 = "UPDATE member_details SET 
                 FirstName='$FirstName', LastName='$LastName', Gender='$Gender', Email='$Email',
@@ -178,20 +204,26 @@ if (strlen($_SESSION['login']) == 0) {
     }
 
     // ========== SEARCH & FILTER ==========
-    // $whereClause = "WHERE 1=1";
-    $whereClause .= (!empty($whereClause) ? " AND " : " WHERE ") . "is_delete = 0";
+    // initialize where clause and filter vars
+    $whereClause = "";
+    $whereClause .= " WHERE is_delete = 0";
 
-    if (!empty($_GET['search'])) {
-        $searchTerm = mysqli_real_escape_string($con, $_GET['search']);
+    // Ensure searchTerm is defined (use empty string when not present)
+    $searchTerm = isset($_GET['search']) ? mysqli_real_escape_string($con, $_GET['search']) : '';
+    if ($searchTerm !== '') {
         $whereClause .= " AND (FirstName LIKE '%$searchTerm%' 
                             OR LastName LIKE '%$searchTerm%' 
                             OR Email LIKE '%$searchTerm%')";
     }
 
-    if (!empty($_GET['status']) && $_GET['status'] != 'all') {
+    // Use isset instead of empty so that status = '0' (inactive) is handled correctly
+    if (isset($_GET['status']) && $_GET['status'] !== 'all' && $_GET['status'] !== '') {
         $statusFilter = mysqli_real_escape_string($con, $_GET['status']);
         $whereClause .= " AND Is_Active = '$statusFilter'";
     }
+
+    // Keep a copy of request status for use in the HTML (select / pagination links)
+    $statusParam = isset($_GET['status']) ? $_GET['status'] : '';
 
     // ========== PAGINATION ==========
     $limit = 10;
@@ -214,6 +246,63 @@ if (strlen($_SESSION['login']) == 0) {
     ORDER BY m.id DESC
     LIMIT $limit OFFSET $offset"
 );
+
+    // If editing existing member (via ?id=), fetch member details to pre-fill the modal
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        $MemberBid = intval($_GET['id']);
+        $memberRes = mysqli_query($con, "SELECT * FROM member_details WHERE id = '$MemberBid' LIMIT 1");
+        if ($memberRes && mysqli_num_rows($memberRes) > 0) {
+            $m = mysqli_fetch_assoc($memberRes);
+            $FirstName = $m['FirstName'];
+            $LastName = $m['LastName'];
+            $Gender = $m['Gender'];
+            $Email = $m['Email'];
+            $Mobile = $m['Mobile'];
+            $AlterNumber = $m['AlterNumber'];
+            $DoctorName = $m['DoctorName'];
+            $DoctorNumber = $m['DoctorNumber'];
+            $MedicalHistory = $m['MedicalHistory'];
+            $Address = $m['Address'];
+            $PermnentAddress = $m['PermnentAddress'];
+            $DrivingNumber = $m['DrivingNumber'];
+            $PanNumber = $m['PanNumber'];
+            $AadharNumber = $m['AadharNumber'];
+            $Dob = $m['Dob'];
+            $JoinDate = $m['JoinDate'];
+            $ExpiryDate = $m['ExpiryDate'];
+            $MaritalStatus = $m['MaritalStatus'];
+            $AssignStaff = $m['AssignStaff'];
+            $ShiftType = $m['ShiftType'];
+            $PakageType = $m['PakageType'];
+            $PaymentMode = $m['PaymentMode'];
+            $ReceiptType = $m['ReceiptType'];
+            $ReceiptDate = $m['ReceiptDate'];
+            $PostingDate = $m['PostingDate'];
+            $Is_Active = $m['Is_Active'];
+            $PostImage = $m['PostImage'];
+        }
+
+        $measRes = mysqli_query($con, "SELECT * FROM measurements WHERE member_id = '$MemberBid' LIMIT 1");
+        if ($measRes && mysqli_num_rows($measRes) > 0) {
+            $ms = mysqli_fetch_assoc($measRes);
+            $branch_manager = $ms['branch_manager'];
+            $membership_type = $ms['membership_type'];
+            $membership_status = $ms['membership_status'];
+            $assigned_trainer = $ms['assigned_trainer'];
+            $emg_contact_name = $ms['emg_contact_name'];
+            $emg_relationship = $ms['emg_relationship'];
+            $emg_phone = $ms['emg_phone'];
+            $current_weight = $ms['current_weight'];
+            $goal_weight = $ms['goal_weight'];
+            $body_fat = $ms['body_fat'];
+            $muscle_mass = $ms['muscle_mass'];
+            $chest = $ms['chest'];
+            $waist = $ms['waist'];
+            $hips = $ms['hips'];
+            $arms = $ms['arms'];
+            $thighs = $ms['thighs'];
+        }
+    }
 
 ?>
 
@@ -271,9 +360,9 @@ if (strlen($_SESSION['login']) == 0) {
                                         </div>
                                         <div class="col-md-3">
                                             <select class="form-control status-filter" name="status">
-                                                <option value="all" <?php echo (empty($_GET['status']) || $_GET['status'] == 'all') ? 'selected' : ''; ?>>All Status</option>
-                                                <option value="1" <?php echo (isset($_GET['status']) && $_GET['status'] == '1') ? 'selected' : ''; ?>>Active</option>
-                                                <option value="0" <?php echo (isset($_GET['status']) && $_GET['status'] == '0') ? 'selected' : ''; ?>>Inactive</option>
+                                                <option value="all" <?php echo ($statusParam === '' || $statusParam === 'all') ? 'selected' : ''; ?>>All Status</option>
+                                                <option value="1" <?php echo ($statusParam === '1') ? 'selected' : ''; ?>>Active</option>
+                                                <option value="0" <?php echo ($statusParam === '0') ? 'selected' : ''; ?>>Inactive</option>
                                             </select>
                                         </div>
                                         <div class="col-md-3">
@@ -294,7 +383,16 @@ if (strlen($_SESSION['login']) == 0) {
                                            
                                             <div class="member-info">
                                                 <div class="member-avatar">
-                                                    <?php echo strtoupper(substr($row['FirstName'], 0, 1)); ?>
+                                                    <?php
+                                                    $imgFile = isset($row['PostImage']) ? $row['PostImage'] : '';
+                                                    $imgPathRel = 'postimages/' . $imgFile;
+                                                    $imgPathAbs = __DIR__ . DIRECTORY_SEPARATOR . 'postimages' . DIRECTORY_SEPARATOR . $imgFile;
+                                                    if (!empty($imgFile) && file_exists($imgPathAbs)) {
+                                                        echo '<img src="' . htmlentities($imgPathRel) . '" alt="Avatar" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">';
+                                                    } else {
+                                                        echo '<div class="avatar-initial">' . strtoupper(substr($row['FirstName'], 0, 1)) . '</div>';
+                                                    }
+                                                    ?>
                                                 </div>
                                                 <div>
                                                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -308,7 +406,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                          <i class="fa fa-envelope"></i> <?php echo htmlentities($row['Email']); ?>
                                                         </div> &nbsp;&nbsp;
                                                     &nbsp;<div class="member-phone">
-                                                        <i class="fa fa-Mobile"></i> <?php echo htmlentities($row['Mobile']); ?>
+                                                        <i class="fa fa-phone"></i> <?php echo htmlentities($row['Mobile']); ?>
                                                     </div>
                                                     </div>
                                                 </div>
@@ -411,14 +509,14 @@ if (strlen($_SESSION['login']) == 0) {
         <div class="modal fade custom-modal-rounded" id="addMemberModal" tabindex="-1" role="dialog"
             aria-labelledby="addMemberModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <!-- <input type="hidden" name="MemberBid" id="MemberBid"> -->
                     <input type="hidden" name="member_id" value="<?php echo $MemberBid; ?>">
 
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addMemberModalLabel"><span class="icon-bg"><i
-                                        class="fa-solid fa-user fa-2x"></i></span> Add New Member</h5>
+                                        class="fa-solid fa-user fa-2x"></i></span> <?php echo !empty($MemberBid) ? 'Edit Member' : 'Add New Member'; ?></h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -435,82 +533,81 @@ if (strlen($_SESSION['login']) == 0) {
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input type="file" class="form-control" name="PostImage" id="postimage"
-                                                accept="image/*" required onchange="previewImage(event)">
+                                                accept="image/*" <?php echo empty($PostImage) ? 'required' : ''; ?> onchange="previewImage(event)">
                                         </div>
                                         <div class="col-md-6">
-                                            <img id="imagePreview" src="#" alt="Selected Image"
-                                                style="display: none; height: 100px; width: 100px; border: 1px solid #ccc; padding: 5px;">
+                                            <img id="imagePreview" src="<?php echo !empty($PostImage) ? 'postimages/'.htmlentities($PostImage) : '#'; ?>" alt="Selected Image"
+                                                style="display: <?php echo !empty($PostImage) ? 'block' : 'none'; ?>; height: 100px; width: 100px; border: 1px solid #ccc; padding: 5px;">
                                         </div>
-                                <div class="col-md-6">
+                                    <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="firstName">First Name*</label>
-                                        <input type="text" class="form-control" name="FirstName" id="firstName" required>
+                                        <input type="text" class="form-control" name="FirstName" id="firstName" required value="<?php echo htmlentities($FirstName ?? ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lastName">Last Name*</label>
-                                        <input type="text" class="form-control" name="LastName" id="lastName" required>
+                                        <input type="text" class="form-control" name="LastName" id="lastName" required value="<?php echo htmlentities($LastName ?? ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lastName">Gender*</label>
                                         
-                                            <label class="radio-inline"><input type="radio" name="Gender" value="Male"
-                                                    required> Male</label>
-                                            <label class="radio-inline"><input type="radio" name="Gender" value="Female">
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Male" <?php echo (isset($Gender) && $Gender == 'Male') ? 'checked' : ''; ?> required> Male</label>
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Female" <?php echo (isset($Gender) && $Gender == 'Female') ? 'checked' : ''; ?>>
                                                 Female</label>
-                                            <label class="radio-inline"><input type="radio" name="Gender" value="Other">
+                                            <label class="radio-inline"><input type="radio" name="Gender" value="Other" <?php echo (isset($Gender) && $Gender == 'Other') ? 'checked' : ''; ?>>
                                                 Other</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                        <div class="col-md-6">
                                     <div class="form-group">
                                         <select class="form-control" name="MaritalStatus" id="maritalstatus" required>
                                                 <option value="">-- Marital Status --</option>
-                                                <option value="Married">Married</option>
-                                                <option value="Unmarried">Unmarried</option>
+                                                <option value="Married" <?php echo (isset($MaritalStatus) && $MaritalStatus == 'Married') ? 'selected' : ''; ?>>Married</option>
+                                                <option value="Unmarried" <?php echo (isset($MaritalStatus) && $MaritalStatus == 'Unmarried') ? 'selected' : ''; ?>>Unmarried</option>
                                         </select>
                                     </div>
 
                                 </div>
-                                <div class="col-md-6">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="branchNumber"><i class="fa-solid fa-Mobile-volume"></i> Mobile
                                                     Number</label>
-                                                <input type="text" class="form-control" id="Mobile" name="Mobile" required>
+                                                <input type="text" class="form-control" id="Mobile" name="Mobile" required value="<?php echo htmlentities($Mobile ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="branchNumber"><i class="fa-solid fa-Mobile-volume"></i> Alternate
                                                     Number</label>
-                                                <input type="text" class="form-control" id="AlterNumber" name="AlterNumber" required>
+                                                <input type="text" class="form-control" id="AlterNumber" name="AlterNumber" required value="<?php echo htmlentities($AlterNumber ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="Email"><i class="fa-regular fa-envelope"></i> Email Address</label>
-                                                <input type="text" class="form-control" id="Email" name="Email" required>
+                                                <input type="text" class="form-control" id="Email" name="Email" required value="<?php echo htmlentities($Email ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="dob"><i class="fa-solid fa-calendar-days"></i> Date of Birth</label>
-                                                <input type="date" class="form-control" id="dob" name="Dob" required>
+                                                <input type="date" class="form-control" id="dob" name="Dob" required value="<?php echo htmlentities($Dob ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="address"><i class="fa-solid fa-location-dot"></i> Address</label>
-                                                <textarea type="text" class="form-control" id="address" name="Address" required></textarea>
+                                                <textarea type="text" class="form-control" id="address" name="Address" required><?php echo htmlentities($Address ?? ''); ?></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="dob"><i class="fa-solid fa-location-dot"></i> Permenent Address</label>
-                                                <textarea type="text" class="form-control" id="PermnentAddress" name="PermnentAddress" required></textarea>
+                                                <textarea type="text" class="form-control" id="PermnentAddress" name="PermnentAddress" required><?php echo htmlentities($PermnentAddress ?? ''); ?></textarea>
                                             </div>
                                         </div>
                                         
@@ -526,9 +623,10 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <select class="form-select form-control" id="branchManager" name="branch_manager">
                                                     <option selected disabled>Select a branch</option>
                                                     <?php
-                                                    $query = mysqli_query($con, "SELECT BranchName FROM tblbranch WHERE Is_active=1");
-                                                    while ($row = mysqli_fetch_array($query)) {
-                                                        echo '<option value="' . htmlentities($row['BranchName']) . '">' . htmlentities($row['BranchName']) . '</option>';
+                                                    $bquery = mysqli_query($con, "SELECT BranchName FROM tblbranch WHERE Is_active=1");
+                                                    while ($brow = mysqli_fetch_array($bquery)) {
+                                                        $sel = (isset($branch_manager) && $branch_manager == $brow['BranchName']) ? ' selected' : '';
+                                                        echo '<option value="' . htmlentities($brow['BranchName']) . '"' . $sel . '>' . htmlentities($brow['BranchName']) . '</option>';
                                                     }
                                                     ?>
                                                 </select>
@@ -540,9 +638,10 @@ if (strlen($_SESSION['login']) == 0) {
                                         <select class="form-select form-control" id="membershipType" name="membership_type">
                                             <option selected disabled>Select a membership</option>
                                             <?php
-                                                        $query = mysqli_query($con, "SELECT PackageName FROM tblpackage WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['PackageName']) . '">' . htmlentities($row['PackageName']) . '</option>';
+                                                        $pquery = mysqli_query($con, "SELECT PackageName FROM tblpackage WHERE Is_active=1");
+                                                        while ($prow = mysqli_fetch_array($pquery)) {
+                                                            $selp = (isset($membership_type) && $membership_type == $prow['PackageName']) ? ' selected' : '';
+                                                            echo '<option value="' . htmlentities($prow['PackageName']) . '"' . $selp . '>' . htmlentities($prow['PackageName']) . '</option>';
                                                         }
                                                         ?>
                                                 </select>
@@ -553,8 +652,8 @@ if (strlen($_SESSION['login']) == 0) {
                                         <label for="membershipStatus">Membership Status</label>
                                         <select class="form-select form-control" id="membershipStatus" name="membership_status">
                                             <option selected disabled>Select a Status</option>
-                                            <option value="active">Active</option>
-                                            <option value="In active">In Active</option>
+                                            <option value="active" <?php echo (isset($membership_status) && $membership_status == 'active') ? 'selected' : ''; ?>>Active</option>
+                                            <option value="In active" <?php echo (isset($membership_status) && $membership_status == 'In active') ? 'selected' : ''; ?>>In Active</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -564,9 +663,10 @@ if (strlen($_SESSION['login']) == 0) {
                                         <select class="form-select form-control" id="assignedTrainer" name="AssignStaff">
                                             <option selected disabled>Select Trainer</option>
                                             <?php
-                                                        $query = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['FirstName']) . '">' . htmlentities($row['FirstName']) . '</option>';
+                                                        $tquery = mysqli_query($con, "SELECT FirstName FROM staff_details WHERE Is_active=1");
+                                                        while ($trow = mysqli_fetch_array($tquery)) {
+                                                            $selt = (isset($AssignStaff) && $AssignStaff == $trow['FirstName']) ? ' selected' : '';
+                                                            echo '<option value="' . htmlentities($trow['FirstName']) . '"' . $selt . '>' . htmlentities($trow['FirstName']) . '</option>';
                                                         }
                                                         ?>
                                                 </select>
@@ -578,9 +678,10 @@ if (strlen($_SESSION['login']) == 0) {
                                         <select class="form-select form-control" id="assignedTrainer" name="assigned_trainer">
                                             <option selected disabled>Select Shift</option>
                                             <?php
-                                                        $query = mysqli_query($con, "SELECT ShiftName FROM tblshift WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['ShiftName']) . '">' . htmlentities($row['ShiftName']) . '</option>';
+                                                        $shquery = mysqli_query($con, "SELECT ShiftName FROM tblshift WHERE Is_active=1");
+                                                        while ($shrow = mysqli_fetch_array($shquery)) {
+                                                            $selsh = (isset($assigned_trainer) && $assigned_trainer == $shrow['ShiftName']) ? ' selected' : '';
+                                                            echo '<option value="' . htmlentities($shrow['ShiftName']) . '"' . $selsh . '>' . htmlentities($shrow['ShiftName']) . '</option>';
                                                         }
                                                         ?>
                                                 </select>
@@ -592,9 +693,10 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <select class="form-control" name="PaymentMode" id="paymode" required>
                                                         <option value="">-- Payment Mode --</option>
                                                     <?php
-                                                        $query = mysqli_query($con, "SELECT PaymentMode FROM tblpaymode WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                            echo '<option value="' . htmlentities($row['PaymentMode']) . '">' . htmlentities($row['PaymentMode']) . '</option>';
+                                                        $pmquery = mysqli_query($con, "SELECT PaymentMode FROM tblpaymode WHERE Is_active=1");
+                                                        while ($pmrow = mysqli_fetch_array($pmquery)) {
+                                                            $selpm = (isset($PaymentMode) && $PaymentMode == $pmrow['PaymentMode']) ? ' selected' : '';
+                                                            echo '<option value="' . htmlentities($pmrow['PaymentMode']) . '"' . $selpm . '>' . htmlentities($pmrow['PaymentMode']) . '</option>';
                                                         }
                                                         ?>
                                                 </select>
@@ -603,7 +705,7 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="receiptdate">Receipt</label>
-                                                <input type="date" class="form-control" name="ReceiptDate" id="receiptdate" required>
+                                                <input type="date" class="form-control" name="ReceiptDate" id="receiptdate" required value="<?php echo htmlentities($ReceiptDate ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-6">
@@ -612,10 +714,12 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <select class="form-control" name="ReceiptType" id="paymode" required>
                                                 <option value="">-- Receipt Type --</option>
                                                     <?php
-                                                        $query = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_active=1");
-                                                        while ($row = mysqli_fetch_array($query)) {
-                                                        echo '<option value="' . htmlentities($row['ReceiptNumber']) . '">' . htmlentities($row['ReceiptNumber']) . '</option>';
-                                                    }?>
+                                                        $rquery = mysqli_query($con, "SELECT ReceiptNumber FROM tblreceipt WHERE Is_active=1");
+                                                        while ($rrow = mysqli_fetch_array($rquery)) {
+                                                            $selr = (isset($ReceiptType) && $ReceiptType == $rrow['ReceiptNumber']) ? ' selected' : '';
+                                                            echo '<option value="' . htmlentities($rrow['ReceiptNumber']) . '"' . $selr . '>' . htmlentities($rrow['ReceiptNumber']) . '</option>';
+                                                        }
+                                                    ?>
                                                  </select>
                                             </div>
                                         </div>
@@ -632,19 +736,19 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="adharnum">Adhar Number</label>
-                                                <input type="text" class="form-control" name="AadharNumber" id="adharnum" required>
+                                                <input type="text" class="form-control" name="AadharNumber" id="adharnum" required value="<?php echo htmlentities($AadharNumber ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="pannum">Pan Number</label>
-                                                <input type="text" class="form-control" name="PanNumber" id="pannum" required>
+                                                <input type="text" class="form-control" name="PanNumber" id="pannum" required value="<?php echo htmlentities($PanNumber ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="drivingnum">Driving License</label>
-                                                <input type="text" class="form-control" name="DrivingNumber" id="drivingnum" required>
+                                                <input type="text" class="form-control" name="DrivingNumber" id="drivingnum" required value="<?php echo htmlentities($DrivingNumber ?? ''); ?>">
                                             </div>
                                         </div>
                                         <h4 style="margin-left:10px">Doctor's Details</h4>
@@ -652,23 +756,24 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="dname">Doctor's Name</label>
-                                                <input type="text" class="form-control" name="DoctorName" id="dname" required>
+                                                <input type="text" class="form-control" name="DoctorName" id="dname" required value="<?php echo htmlentities($DoctorName ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="dnumber">Doctor's Number</label>
-                                                <input type="text" class="form-control" name="DoctorNumber" id="dnumber" required>
+                                                <input type="text" class="form-control" name="DoctorNumber" id="dnumber" required value="<?php echo htmlentities($DoctorNumber ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <select class="form-control" name="MedicalHistory" required>
                                                 <option value="">-- Medical History --</option>
-                                                <option value="No">No</option>
+                                                <option value="No" <?php echo (isset($MedicalHistory) && $MedicalHistory == 'No') ? 'selected' : ''; ?>>No</option>
                                                 <?php
-                                                $query = mysqli_query($con, "SELECT MedicalRecord FROM tblmedical WHERE Is_active=1");
-                                                while ($row = mysqli_fetch_array($query)) {
-                                                    echo '<option value="' . htmlentities($row['MedicalRecord']) . '">' . htmlentities($row['MedicalRecord']) . '</option>';
+                                                $medquery = mysqli_query($con, "SELECT MedicalRecord FROM tblmedical WHERE Is_active=1");
+                                                while ($mrow = mysqli_fetch_array($medquery)) {
+                                                    $selm = (isset($MedicalHistory) && $MedicalHistory == $mrow['MedicalRecord']) ? ' selected' : '';
+                                                    echo '<option value="' . htmlentities($mrow['MedicalRecord']) . '"' . $selm . '>' . htmlentities($mrow['MedicalRecord']) . '</option>';
                                                 }
                                                 ?>
                                             </select>
@@ -683,13 +788,13 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="current_weight">Weight</label>
-                                                <input type="text" class="form-control" name="current_weight" id="current_weight" required>
+                                                <input type="text" class="form-control" name="current_weight" id="current_weight" required value="<?php echo htmlentities($current_weight ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="goal_weight">Goal Weight</label>
-                                                <input type="text" class="form-control" name="goal_weight" id="goal_weight" required>
+                                                <input type="text" class="form-control" name="goal_weight" id="goal_weight" required value="<?php echo htmlentities($goal_weight ?? ''); ?>">
                                             </div>
                                         </div> 
                                         
@@ -697,43 +802,43 @@ if (strlen($_SESSION['login']) == 0) {
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="body_fat">Body Fat</label>
-                                                <input type="text" class="form-control" name="body_fat" id="body_fat" required>
+                                                <input type="text" class="form-control" name="body_fat" id="body_fat" required value="<?php echo htmlentities($body_fat ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="muscle_mass">Mussle Mass</label>
-                                                <input type="text" class="form-control" name="muscle_mass" id="muscle_mass" required>
+                                                <input type="text" class="form-control" name="muscle_mass" id="muscle_mass" required value="<?php echo htmlentities($muscle_mass ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="chest">Chest</label>
-                                                <input type="text" class="form-control" name="chest" id="chest" required>
+                                                <input type="text" class="form-control" name="chest" id="chest" required value="<?php echo htmlentities($chest ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="waist">Waist</label>
-                                                <input type="text" class="form-control" name="waist" id="waist" required>
+                                                <input type="text" class="form-control" name="waist" id="waist" required value="<?php echo htmlentities($waist ?? ''); ?>">
                                             </div>
                                         </div> 
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="hips">Hips</label>
-                                                <input type="text" class="form-control" name="hips" id="hips" required>
+                                                <input type="text" class="form-control" name="hips" id="hips" required value="<?php echo htmlentities($hips ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="arms">Arms</label>
-                                                <input type="text" class="form-control" name="arms" id="arms" required>
+                                                <input type="text" class="form-control" name="arms" id="arms" required value="<?php echo htmlentities($arms ?? ''); ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="thighs">Thighs</label>
-                                                <input type="text" class="form-control" name="thighs" id="thighs" required>
+                                                <input type="text" class="form-control" name="thighs" id="thighs" required value="<?php echo htmlentities($thighs ?? ''); ?>">
                                             </div>
                                         </div>
                                     
@@ -757,6 +862,8 @@ if (strlen($_SESSION['login']) == 0) {
 
         <script>
             var resizefunc = [];
+            </script>
+        <script>
 
             function applyFilters() {
                 var search = document.querySelector('input[name="search"]').value;
@@ -784,6 +891,7 @@ if (strlen($_SESSION['login']) == 0) {
             });
         </script>
         <script>
+       
         // Auto hide alert after 5 seconds (5000ms)
         setTimeout(function () {
             $('.alert').fadeOut('slow');
@@ -807,6 +915,7 @@ if (strlen($_SESSION['login']) == 0) {
                 }
             }
         </script>
+        <!-- Auto-open modal script moved to after jQuery/Bootstrap includes -->
         <!-- Delete Modal Script -->
         <script src="assets/js/modal-alert.js"></script>
 
@@ -824,6 +933,17 @@ if (strlen($_SESSION['login']) == 0) {
         <script src="assets/js/jquery.core.js"></script>
         <script src="assets/js/jquery.app.js"></script>
         <script src="https://kit.fontawesome.com/ae115648d7.js" crossorigin="anonymous"></script>
+
+        <?php if (!empty($MemberBid)) { ?>
+        <script>
+            (function($){
+                $(function(){
+                    $('#addMemberModal').modal('show');
+                    $('#addMemberModalLabel').text('Edit Member');
+                });
+            })(jQuery);
+        </script>
+        <?php } ?>
 
     </body>
 

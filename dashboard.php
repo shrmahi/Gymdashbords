@@ -7,15 +7,17 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 header("Pragma: no-cache");
 
-if (!isset($_SESSION['login']) || strlen($_SESSION['login']) == 0) {
-    header('Location: index.php');
-    exit();
+
+if (!isset($_SESSION['login']) || $_SESSION['utype'] !== 'admin') {
+    header("Location: index.php");
+    exit;
 }
+
 $userEmail = $_SESSION['login'];
-$query = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Email='$userEmail' LIMIT 1");
+$query = mysqli_query($con, "SELECT Email FROM login WHERE Email='$userEmail' LIMIT 1");
 
 if ($row = mysqli_fetch_assoc($query)) {
-    $_SESSION['username'] = $row['FirstName']; // Store name in session
+    $_SESSION['username'] = $row['Email']; // Store name in session
 } else {
     $_SESSION['username'] = 'User'; // Fallback name
 }
@@ -77,7 +79,7 @@ if ($row = mysqli_fetch_assoc($query)) {
 
                     <!-- Dashboard Widgets -->
                     <div class="row">
-                        <a href="manage-stafflist.php">
+                        <a href="manage-staff.php">
                             <div class="col-lg-4 col-md-4 col-sm-6">
                                 <div class="card-box widget-box-one">
                                     <i class="mdi mdi-account-outline widget-one-icon icon-success"></i>
@@ -85,7 +87,7 @@ if ($row = mysqli_fetch_assoc($query)) {
                                         <p class="m-0 text-uppercase font-600 font-secondary text-overflow text-black">
                                             Total Staff</p>
                                         <?php
-                                        $query = mysqli_query($con, "select * from tblstaff where Is_Active=1");
+                                        $query = mysqli_query($con, "select * from staff_details where Is_Active=1");
                                         $countcat = mysqli_num_rows($query);
                                         ?>
                                         <h2 class="text-black"><?php echo htmlentities($countcat); ?></h2>

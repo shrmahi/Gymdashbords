@@ -1,0 +1,47 @@
+<?php
+include('includes/config.php');
+$registerSuccess = false;
+$registerError = "";
+
+if (isset($_POST['register'])) {
+
+    $name     = trim($_POST['name']);
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
+    $role     = $_POST['userType'];
+
+    // Check if email already exists
+    $checkStmt = $con->prepare("SELECT id FROM staff_details WHERE Email = ?");
+    $checkStmt->bind_param("s", $email);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+
+    if ($checkResult->num_rows > 0) {
+        $registerError = "Email already registered!";
+    } else {
+
+        // Encrypt password (VERY IMPORTANT)
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Insert user
+        $stmt = $con->prepare("
+            INSERT INTO login (Name, Email, Password, userType)
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->bind_param("ssss", $name, $email, $hashedPassword, $role);
+
+        if ($stmt->execute()) {
+            // $registerSuccess = true;
+            header("Location: index.php?registered=success");
+            exit;
+
+        } else {
+            $registerError = "Something went wrong. Try again!";
+        }
+
+        $stmt->close();
+    }
+
+    $checkStmt->close();
+}
+?>

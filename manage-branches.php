@@ -2,16 +2,17 @@
 session_start();
 include('includes/config.php');
 error_reporting(0);
+
 if (strlen($_SESSION['login']) == 0) {
     header('location:index.php');
 } else {
-    // DELETE PACKAGE
+    // DELETE Branch
     if (isset($_GET['delete_id'])) {
         $delete_id = intval($_GET['delete_id']);
         $query = mysqli_query($con, "DELETE FROM tblbranch WHERE id='$delete_id'");
         $msg = $query ? "Branch deleted successfully." : "Delete failed. Try again.";
     }
-
+    // ADD / UPDATE Branch
     if (isset($_POST['submit'])) {
         $branch_id = isset($_POST['branch_id']) ? intval($_POST['branch_id']) : 0;
         $branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
@@ -22,21 +23,20 @@ if (strlen($_SESSION['login']) == 0) {
         $status = 1;
 
         if ($branch_id > 0) {
-            // UPDATE branch
+            // UPDATE Branch
             $query = mysqli_query($con, "UPDATE tblbranch 
-            SET BranchName='$branch_name', BranchManager='$branch_manager', BranchAddress='$branch_address', 
-                BranchEmail='$branch_email', BranchNumber='$branch_number', Is_Active='$status'
-            WHERE id='$branch_id'");
+                SET BranchName='$branch_name', BranchManager='$branch_manager', BranchAddress='$branch_address', 
+                    BranchEmail='$branch_email',BranchNumber='$branch_number', Is_Active='$status'
+                WHERE id='$branch_id'");
             $msg = $query ? "Branch updated successfully." : "Update failed. Try again.";
         } else {
-            // INSERT branch
+            // INSERT package
             $query = mysqli_query($con, "INSERT INTO tblbranch 
-            (BranchName, BranchManager, BranchAddress, BranchEmail, BranchNumber, Is_Active) 
-            VALUES('$branch_name','$branch_manager','$branch_address','$branch_email','$branch_number','$status')");
-            $msg = $query ? "Branch added." : "Something went wrong. Please try again.";
+                (BranchName, BranchManager, BranchAddress, BranchEmail,BranchNumber, Is_Active) 
+                VALUES('$branch_name','$branch_manager','$branch_address','$branch_email','$branch_number','$status')");
+            $msg = $query ? "Branch added successfully." : "Something went wrong. Please try again.";
         }
     }
-
     ?>
 
     <!DOCTYPE html>
@@ -84,21 +84,20 @@ if (strlen($_SESSION['login']) == 0) {
                                 <?php include('alert_message.php'); ?>
                             </div>
 
-                            <!-- Add Branch Button -->
+                            <!-- Add Package Button -->
                             <div class="col-sm-12 mb-3">
                                 <button class="btn btn-success waves-effect waves-light btnAddBranch" data-toggle="modal"
                                     data-target="#addBranchModal">
                                     <i class="mdi mdi-plus-circle-outline"></i> Add Branch
                                 </button>
                             </div>
-                            <br />
-                            <br />
+                            <br /><br />
                         </div>
 
-                        <!-- Sample Branch Card -->
+                        <!-- Package Cards -->
                         <div class="row">
                             <?php
-                            $query = mysqli_query($con, "SELECT `id`, `BranchName`, `BranchManager`, `BranchAddress`, `BranchEmail`, `BranchNumber`, `Is_Active` FROM `tblbranch` Where Is_Active = 1");
+                            $query = mysqli_query($con, "SELECT `id`, `BranchName`, `BranchManager`, `BranchAddress`, `BranchEmail`, `BranchNumber`, `Is_Active` FROM `tblbranch` where Is_Active=1");
                             while ($row = mysqli_fetch_array($query)) {
                                 ?>
                                 <div class="col-sm-4">
@@ -112,6 +111,7 @@ if (strlen($_SESSION['login']) == 0) {
                                                 </div>
                                                 <span class="status-badge">Active</span>
                                             </div>
+                                            
                                             <hr>
                                             <div class="info-line"><span>Monthly Revenue:</span> <strong>₹38,200</strong></div>
                                             <div class="info-line"><span>Active Members:</span> <strong>156 / 189</strong></div>
@@ -124,66 +124,73 @@ if (strlen($_SESSION['login']) == 0) {
                                                 <small>+91 <?php echo htmlentities($row['BranchNumber']); ?></small><br>
                                                 <small><?php echo htmlentities($row['BranchEmail']); ?></small>
                                             </div>
+                                            <!-- <div class="mb-3"><small>Available in all branches</small></div> -->
                                             <div class="d-flex justify-content-between card-footer-btns">
-                                                
                                                 <a href="#" class="btn btn-primary btn-custom editBranchBtn"
                                                     data-id="<?php echo $row['id']; ?>"
-                                                    data-name="<?php echo htmlentities($row['BranchName']); ?>"
-                                                    data-manager="<?php echo htmlentities($row['BranchManager']); ?>"
-                                                    data-address="<?php echo htmlentities($row['BranchAddress']); ?>"
-                                                    data-email="<?php echo htmlentities($row['BranchEmail']); ?>"
-                                                    data-number="<?php echo htmlentities($row['BranchNumber']); ?>"
-                                                    data-toggle="modal" data-target="#addBranchModal">Edit Branch</a>
+                                                    data-branch-name="<?php echo htmlentities($row['BranchName']); ?>"
+                                                    data-branch-manager="<?php echo htmlentities($row['BranchManager']); ?>"
+                                                    data-branch-address="<?php echo htmlentities($row['BranchAddress']); ?>"
+                                                    data-branch-number="<?php echo htmlentities($row['BranchNumber']); ?>"
+                                                    data-branch-email="<?php echo htmlentities($row['BranchEmail']); ?>"
+                                                    data-toggle="modal"
+                                                    data-target="#addBranchModal">
+                                                    Edit Branch
+                                                </a>
+                                                <!-- <a href="#" class="text-secondary">Delete Branch</a> -->
                                                 <a href="#" class="text-danger"
-                                                    onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'branch')">
-                                                        Delete
-                                                    </a>
-
+                                                        onclick="event.preventDefault(); openModal('<?php echo $row['id']; ?>', 'branch');">
+                                                            Delete
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             <?php } ?>
-
                         </div>
 
                     </div>
                 </div>
-
                 <?php include('includes/footer.php'); ?>
             </div>
 
 
+
         </div> <!-- END wrapper -->
-        <!-- Add Branch Modal -->
+        <!-- Add/Edit Package Modal -->
         <div class="modal fade custom-modal-rounded" id="addBranchModal" tabindex="-1" role="dialog"
             aria-labelledby="addBranchModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <form method="POST">
+
                     <div class="modal-content rounded-lg">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addBranchModalLabel"><span class="icon-bg"><i
-                                        class="fa-regular fa-building fa-2x"></i></span> Add New Branch</h5>
+                                        class="fa-solid fa-chart-simple fa-2x"></i></span> Add New Branch</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+
                         <div class="modal-body">
-                            <input type="hidden" id="branch_id" name="branch_id" value="">
+                            <input type="hidden" name="branch_id" id="branch_id">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="branchName"><i class="fa-regular fa-building"></i> Branch Name</label>
-                                        <input type="text" class="form-control" name="branch_name" id="branchName" required>
+                                            
+                                        <input type="text" class="form-control" name="branch_name" id="branchName"
+                                            required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="branchManager">Branch Manager</label>
+                                        <label for="BranchManager"><i class="fa-regular fa-user"></i> Branch Manager</label>
+                                        
                                         <select class="form-select form-control" id="branchManager" name="branch_manager">
                                             <option selected disabled>Select a manager</option>
                                             <?php
-                                            $query = mysqli_query($con, "SELECT FirstName FROM tblstaff WHERE Is_active=1");
+                                            $query = mysqli_query($con, "SELECT FirstName FROM staff_details WHERE Is_active=1");
                                             while ($row = mysqli_fetch_array($query)) {
                                                 echo '<option value="' . htmlentities($row['FirstName']) . '">' . htmlentities($row['FirstName']) . '</option>';
                                             }
@@ -191,31 +198,29 @@ if (strlen($_SESSION['login']) == 0) {
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="branchName"><i class="fa-solid fa-location-dot"></i> Address</label>
-                                        <textarea type="text" class="form-control" id="branchAddress" name="branch_address"
-                                            required></textarea>
-                                    </div>
-                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="branchName"><i class="fa-solid fa-phone-volume"></i> Phone
-                                            Number</label>
+                                        <label for="BranchNumber"><i class="fa-solid fa-phone"></i> Branch Number</label>
                                         <input type="text" class="form-control" id="branchNumber" name="branch_number"
                                             required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="branchName"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                                        <label for="BranchEmail"><i class="fa-solid fa-envelope"></i> Branch Email</label>
                                         <input type="text" class="form-control" id="branchEmail" name="branch_email"
                                             required>
                                     </div>
                                 </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="isActive" checked>
-                                    <label class="form-check-label" for="isActive">
+                                <div class="col-md-12 form-group m-b-20">
+                                        <label for="branchAddress"><i class="fa-solid fa-location-dot"></i> Branch Address</label>
+                                        <textarea type="text" class="form-control" id="branchAddress" name="branch_address"
+                                            required></textarea>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <input class="form-check-input" type="checkbox" id="Is_Active" checked>
+                                    <label class="form-check-label" for="Is_Active">
                                         Branch is active and operational
                                     </label>
                                 </div>
@@ -232,19 +237,13 @@ if (strlen($_SESSION['login']) == 0) {
         <!-- Delete Confirmation Modal -->
         <?php include('modal-alert.php'); ?>
 
+
         <script>
             var resizefunc = [];
         </script>
+
         <!-- Delete Modal Script -->
         <script src="assets/js/modal-alert.js"></script>
-
-            <script>
-            // Auto hide alert after 5 seconds (5000ms)
-            setTimeout(function () {
-                $('.alert').fadeOut('slow');
-            }, 5000);
-        </script>
-
         <!-- jQuery and App Scripts -->
         <script src="assets/js/jquery.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
@@ -263,30 +262,37 @@ if (strlen($_SESSION['login']) == 0) {
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script>
-            // Reset Modal for Adding
+            // Add Package - reset form
             $(document).on("click", ".btnAddBranch", function () {
                 $("#branch_id").val("");
                 $("#branchName").val("");
                 $("#branchManager").val("");
                 $("#branchAddress").val("");
-                $("#branchNumber").val("");
                 $("#branchEmail").val("");
+                $("#branchNumber").val("");
                 $(".modal-title").text("Add New Branch");
                 $("button[name=submit]").text("Save Branch");
             });
 
-            // Fill Modal for Editing
+            // Edit Branch - fill form
             $(document).on("click", ".editBranchBtn", function () {
-                $("#branch_id").val($(this).data("id"));
-                $("#branchName").val($(this).data("name"));
-                $("#branchManager").val($(this).data("manager"));
-                $("#branchAddress").val($(this).data("address"));
-                $("#branchNumber").val($(this).data("number"));
-                $("#branchEmail").val($(this).data("email"));
+                $("#branch_id").val($(this).attr("data-id"));
+                $("#branchName").val($(this).attr("data-branch-name"));
+                $("#branchManager").val($(this).attr("data-branch-manager"));
+                $("#branchAddress").val($(this).attr("data-branch-address"));
+                $("#branchEmail").val($(this).attr("data-branch-email"));
+                $("#branchNumber").val($(this).attr("data-branch-number"));
                 $(".modal-title").text("Edit Branch");
                 $("button[name=submit]").text("Update Branch");
             });
         </script>
+        <script>
+            // Auto hide alert after 5 seconds (5000ms)
+            setTimeout(function () {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        </script>
+
 
 
     </body>
